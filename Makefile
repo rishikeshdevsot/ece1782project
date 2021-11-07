@@ -12,7 +12,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DLINUX -DCUDA_5 -DCUDA -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED
 CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
-CXXFLAGS      = -m64 -pipe -std=c++11 -isystem /usr//include -O2 -Wall -W -D_REENTRANT $(DEFINES)
+CXXFLAGS      = -m64 -pipe -std=c++11 -O2 -Wall -W -D_REENTRANT $(DEFINES)
 INCPATH       = -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL -I/usr/include/qt4 -Iglm -Isrc -Isrc/ui -Isrc/constraints -Isrc/rendering -Isrc/cuda -I/usr/local/Cellar/glew/1.11.0/include -I/usr//include -I/usr/X11R6/include -Ibuild -Ibuild
 LINK          = g++
 LFLAGS        = -m64 -Wl,-rpath,/usr/lib/x86_64-linux-gnu -Wl,-O1
