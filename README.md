@@ -7,8 +7,9 @@
 
 ## To compile GPU version
 1. Run qmake inside the gpu directory
-2. Compare the makefile created to the makefile.bk, make the changes so that they match (But ensure that the pathnames are local to your machine)
-3. Run make and the binary is called `particles_cuda`
-4. Save this makefile
-TODO:
-Use environment variables to avoid step 2
+2. Compare the makefile created to the makefile.bk, make the changes so that they match (But ensure that the pathnames are local to your machine) \
+TODO: \
+Use environment variables to avoid this step
+4. Run make and the binary is called `particles_cuda`
+5. Save this makefile
+
