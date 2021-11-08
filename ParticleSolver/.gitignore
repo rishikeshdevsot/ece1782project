@@ -1,0 +1,23 @@
+# QT #
+######
+*.pro.user*
+*.qmake.stash
+
+# Compiled Source #
+###################
+*.o
+build/
+
+# Executables #
+###############
+particles_cuda
+particles_cuda.app
+
+# OS Generated Files #
+######################
+*.DS_Store
+
+# Makefiles #
+#############
+Makefile
+
