@@ -66,6 +66,7 @@ void View::paintGL()
     renderText(10, 20, "FPS: " + QString::number((int) (fps)), this->font());
     renderText(10, 40, "# Particles: " + QString::number(sim.getNumParticles()), this->font());
     renderText(10, 60, "Kinetic Energy: " + QString::number(sim.getKineticEnergy()), this->font());
+    renderText(10, 80, "Time Per Frame: " + QString::number(sim.getFrameTime()) + "us", this->font());
 }
 
 void View::resizeGL(int w, int h)

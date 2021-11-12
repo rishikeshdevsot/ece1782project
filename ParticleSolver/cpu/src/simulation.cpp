@@ -13,6 +13,7 @@ Simulation::Simulation()
     m_counts = NULL;
     init(WRECKING_BALL);
     debug = true;
+    frameTime = 0;
 }
 
 Simulation::~Simulation()
@@ -114,6 +115,7 @@ void Simulation::init(SimulationType type)
 // (#) in the main simulation loop refer to lines from the main loop in the paper
 void Simulation::tick(double seconds)
 {
+    auto start = std::chrono::high_resolution_clock::now();
     QHash<ConstraintGroup, QList<Constraint *> > constraints;
 
     // Add all rigid body shape constraints
@@ -366,6 +368,10 @@ void Simulation::tick(double seconds)
     }
     delete[] m_counts;
     m_counts = new int[m_particles.size()];
+
+    auto stop = std::chrono::high_resolution_clock::now();
+    frameTime = 0.02 * std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() + 0.98 * frameTime;
+
 }
 
 Body *Simulation::createRigidBody(QList<Particle *> *verts, QList<SDFData> *sdfData)
@@ -692,9 +698,8 @@ void Simulation::initGranular()
     m_yBoundaries = glm::dvec2(-5, 1000);
     m_gravity = glm::dvec2(0,-9.8);
 
-    // Num particles in this loop
-    for (int i = -50; i <= 50; i++) {
-        for (int j = 0; j < 90; j++) {
+    for (int i = -15; i <= 15; i++) {
+        for (int j = 0; j < 30; j++) {
             glm::dvec2 pos = glm::dvec2(i * (PARTICLE_DIAM + EPSILON), pow(j,1.2) * (PARTICLE_DIAM) + PARTICLE_RAD + m_yBoundaries.x);
             Particle *part= new Particle(pos, 1, SOLID);
             part->sFriction = .35;
@@ -1301,6 +1306,10 @@ double Simulation::getKineticEnergy()
         }
     }
     return energy;
+}
+
+int Simulation::getFrameTime(){
+    return frameTime;
 }
 
 void Simulation::mousePressed(const glm::dvec2 &p)

@@ -6,6 +6,7 @@
 #include "opensmokeemitter.h"
 #include "solver.h"
 #include "fluidemitter.h"
+#include <chrono>
 
 // Number of solver iterations per timestep
 #define SOLVER_ITERATIONS 3
@@ -77,7 +78,10 @@ public:
     // Debug information and flags
     int getNumParticles();
     double getKineticEnergy();
+    int getFrameTime();
     bool debug;
+    int frameTime;
+
 
 private:
 
