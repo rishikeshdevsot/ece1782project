@@ -138,7 +138,6 @@ void Simulation::tick(double seconds)
     }
 
     // (1) For all particles
-    #pragma omp parallel for
     for (int i = 0; i < m_particles.size(); i++) {
         Particle *p = m_particles[i];
 
@@ -252,7 +251,6 @@ void Simulation::tick(double seconds)
 #ifdef USE_STABILIZATION
 
     // (10) For stabilization iterations
-    #pragma omp parallel for
     for (int i = 0; i < STABILIZATION_ITERATIONS; i++) {
 
 #ifdef ITERATIVE
@@ -301,7 +299,6 @@ void Simulation::tick(double seconds)
     m_contactSolver.setupSizes(m_particles.size(), &constraints[CONTACT]);
 
     // (16) For solver iterations
-    #pragma omp parallel for
     for (int i = 0; i < SOLVER_ITERATIONS; i++) {
 
         // (17, 18, 19, 20) for constraint group, solve constraints and update ep
@@ -324,7 +321,6 @@ void Simulation::tick(double seconds)
 #endif
 
     // (23) For all particles
-    #pragma omp parallel for
     for (int i = 0; i < m_particles.size(); i++) {
         Particle *p = m_particles[i];
 
