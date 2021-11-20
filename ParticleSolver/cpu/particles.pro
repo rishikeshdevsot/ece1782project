@@ -10,8 +10,8 @@ QMAKE_CXXFLAGS += -std=c++0x
 # INCLUDEPATH += folder1 folder2
 # DEPENDPATH += folder1 folder2
 
-INCLUDEPATH += src src/solver src/constraint glm
-DEPENDPATH += src src/solver src/constraint glm
+INCLUDEPATH += src src/solver src/constraint glm eigen-3.4.0
+DEPENDPATH += src src/solver src/constraint glm eigen-3.4.0
 
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \

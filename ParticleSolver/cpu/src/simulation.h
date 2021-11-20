@@ -12,7 +12,7 @@
 #define SOLVER_ITERATIONS 3
 
 // Iterative or matrix solve
-#define ITERATIVE
+//#define ITERATIVE
 
 // Use stabilization pass or not, and if so how many iterations
 //#define USE_STABILIZATION

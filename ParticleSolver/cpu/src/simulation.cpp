@@ -11,7 +11,7 @@
 Simulation::Simulation()
 {
     m_counts = NULL;
-    init(WRECKING_BALL);
+    init(SDF_TEST);
     debug = true;
     frameTime = 0;
 }

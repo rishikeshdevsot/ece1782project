@@ -4,6 +4,8 @@
 #include "matrix.h"
 #include "particle.h"
 #include "lineareq.h"
+#include <Eigen/Dense>
+#include <iostream>
 
 #define RELAXATION_PARAMETER 1.
 
