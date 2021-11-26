@@ -1,0 +1,656 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 60.74      2.15     2.15                             TotalFluidConstraint::grad(QList<Particle*>*, int, int)
+ 12.15      2.58     0.43     5340     0.08     0.10  TotalFluidConstraint::project(QList<Particle*>*, int*)
+ 11.58      2.99     0.41      890     0.46     1.18  Simulation::tick(double)
+  7.63      3.26     0.27 64508893     0.00     0.00  TotalFluidConstraint::spikyGrad(glm::detail::tvec2<double, (glm::precision)0> const&, double)
+  1.41      3.31     0.05   869616     0.00     0.00  QList<int>::detach_helper_grow(int, int)
+  1.41      3.36     0.05   409914     0.00     0.00  Simulation::drawCircle()
+  1.41      3.41     0.05      935     0.05     0.11  Simulation::drawParticles()
+  1.13      3.45     0.04     1788     0.02     0.03  std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*)
+  0.56      3.47     0.02   124836     0.00     0.00  BoundaryConstraint::project(QList<Particle*>*, int*)
+  0.56      3.49     0.02      892     0.02     0.06  Solver::setupM(QList<Particle*>*, bool)
+  0.56      3.51     0.02                             TotalFluidConstraint::poly6(double)
+  0.28      3.52     0.01   771352     0.00     0.00  std::_Rb_tree_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&)
+  0.28      3.53     0.01   771352     0.00     0.00  std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, double> >*)
+  0.28      3.54     0.01                             QHash<int, double>::deleteNode2(QHashData::Node*)
+  0.00      3.54     0.00 20085605     0.00     0.00  QList<int>::append(int const&)
+  0.00      3.54     0.00   771352     0.00     0.00  std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, int const&)
+  0.00      3.54     0.00   771352     0.00     0.00  std::_Rb_tree_iterator<std::pair<int const, double> > std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, double> >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&)
+  0.00      3.54     0.00   771352     0.00     0.00  std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_unique_pos(int const&)
+  0.00      3.54     0.00   771352     0.00     0.00  std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, double> >, int const&)
+  0.00      3.54     0.00    43396     0.00     0.00  QList<Constraint*>::append(Constraint* const&)
+  0.00      3.54     0.00    41612     0.00     0.00  BoundaryConstraint::updateCounts(int*)
+  0.00      3.54     0.00    41612     0.00     0.00  BoundaryConstraint::BoundaryConstraint(int, double, bool, bool, bool)
+  0.00      3.54     0.00    41612     0.00     0.00  BoundaryConstraint::~BoundaryConstraint()
+  0.00      3.54     0.00     8892     0.00     0.00  Simulation::setColor(int, float)
+  0.00      3.54     0.00     3632     0.00     0.00  TotalFluidConstraint::draw(QList<Particle*>*)
+  0.00      3.54     0.00     2957     0.00     0.00  TotalFluidConstraint::gradient(QList<Particle*>*, int)
+  0.00      3.54     0.00     2393     0.00     0.00  QList<Particle*>::append(Particle* const&)
+  0.00      3.54     0.00     1779     0.00     0.00  QList<Constraint*>::detach_helper_grow(int, int)
+  0.00      3.54     0.00      935     0.00     0.00  Simulation::drawBodies()
+  0.00      3.54     0.00      935     0.00     0.00  Simulation::drawGlobals()
+  0.00      3.54     0.00      935     0.00     0.00  Simulation::getFrameTime()
+  0.00      3.54     0.00      935     0.00     0.00  Simulation::getNumParticles()
+  0.00      3.54     0.00      935     0.00     0.00  Simulation::getKineticEnergy()
+  0.00      3.54     0.00      935     0.00     0.11  Simulation::draw()
+  0.00      3.54     0.00      935     0.00     0.00  Simulation::drawGrid()
+  0.00      3.54     0.00      935     0.00     0.00  Simulation::drawSmoke()
+  0.00      3.54     0.00      893     0.00     0.00  non-virtual thunk to View::~View()
+  0.00      3.54     0.00      892     0.00     0.00  std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_get_insert_unique_pos(int const&)
+  0.00      3.54     0.00      890     0.00     0.00  QHash<ConstraintGroup, QList<Constraint*> >::operator[](ConstraintGroup const&)
+  0.00      3.54     0.00      890     0.00     0.03  Solver::setupSizes(int, QList<Constraint*>*)
+  0.00      3.54     0.00       45     0.00     0.00  QList<Particle*>::detach_helper_grow(int, int)
+  0.00      3.54     0.00       43     0.00     0.00  QList<Particle*>::clear()
+  0.00      3.54     0.00       41     0.00     0.00  Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*)
+  0.00      3.54     0.00       41     0.00     0.00  TotalShapeConstraint::TotalShapeConstraint(Body*, double)
+  0.00      3.54     0.00       41     0.00     0.00  TotalShapeConstraint::~TotalShapeConstraint()
+  0.00      3.54     0.00       41     0.00     0.00  Body::computeRs(QList<Particle*>*)
+  0.00      3.54     0.00       41     0.00     0.00  Body::updateCOM(QList<Particle*>*, bool)
+  0.00      3.54     0.00       41     0.00     0.00  std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::operator=(std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > > const&)
+  0.00      3.54     0.00       26     0.00     0.00  QList<SDFData>::append(SDFData const&)
+  0.00      3.54     0.00       18     0.00     0.00  DistanceConstraint::draw(QList<Particle*>*)
+  0.00      3.54     0.00       12     0.00     0.00  QList<Constraint*>::removeAll(Constraint* const&)
+  0.00      3.54     0.00        3     0.00     0.00  Simulation::createFluid(QList<Particle*>*, double)
+  0.00      3.54     0.00        3     0.00     0.00  Simulation::clear()
+  0.00      3.54     0.00        3     0.00     0.00  TotalFluidConstraint::TotalFluidConstraint(double, QList<int>*)
+  0.00      3.54     0.00        3     0.00     0.00  TotalFluidConstraint::~TotalFluidConstraint()
+  0.00      3.54     0.00        3     0.00     0.00  TotalFluidConstraint::~TotalFluidConstraint()
+  0.00      3.54     0.00        2     0.00     0.00  LinearData::clean()
+  0.00      3.54     0.00        2     0.00     0.00  QList<SDFData>::detach_helper_grow(int, int)
+  0.00      3.54     0.00        2     0.00     0.00  QList<Constraint*>::detach_helper(int)
+  0.00      3.54     0.00        2     0.00     0.00  Solver::Solver()
+  0.00      3.54     0.00        2     0.00     0.06  Solver::~Solver()
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN10LinearData5cleanEv
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN10MainWindowC2EP7QWidget
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN10SimulationC2Ev
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN12FluidEmitterC2EN3glm6detail5tvec2IdLNS0_9precisionE0EEEdP20TotalFluidConstraint
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN13GasConstraintC2EdP5QListIiEb
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN16OpenSmokeEmitterC2EN3glm6detail5tvec2IdLNS0_9precisionE0EEEdP13GasConstraint
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN17ContactConstraintC2Eiib
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN18BoundaryConstraintC2Eidbbb
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN18DistanceConstraintC2Ediib
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN20TotalFluidConstraintC2EdP5QListIiE
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN20TotalShapeConstraintC2EP4Bodyd
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN22RigidContactConstraintC2EiiP5QListIP4BodyEb
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN4View18qt_static_metacallEP7QObjectN11QMetaObject4CallEiPPv
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN4ViewC2EP7QWidget
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN6SolverC2Ev
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN8Particle10getSDFDataEP5QListIP4BodyEi
+  0.00      3.54     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZNK12SparseMatrix12getTransposeEv
+  0.00      3.54     0.00        1     0.00     0.00  Simulation::initWreckingBall()
+  0.00      3.54     0.00        1     0.00     0.13  Simulation::init(SimulationType)
+  0.00      3.54     0.00        1     0.00     0.00  Simulation::resize(glm::detail::tvec2<int, (glm::precision)0> const&)
+  0.00      3.54     0.00        1     0.00     0.00  Simulation::initFluid()
+  0.00      3.54     0.00        1     0.00     0.13  Simulation::Simulation()
+  0.00      3.54     0.00        1     0.00     0.17  Simulation::~Simulation()
+  0.00      3.54     0.00        1     0.00     0.00  DistanceConstraint::DistanceConstraint(int, int, QList<Particle*>*)
+  0.00      3.54     0.00        1     0.00     0.00  DistanceConstraint::~DistanceConstraint()
+  0.00      3.54     0.00        1     0.00     0.13  View::View(QWidget*)
+  0.00      3.54     0.00        1     0.00     0.17  View::~View()
+  0.00      3.54     0.00        1     0.00     0.00  QList<FluidEmitter*>::detach_helper(int)
+  0.00      3.54     0.00        1     0.00     0.00  QList<OpenSmokeEmitter*>::detach_helper(int)
+  0.00      3.54     0.00        1     0.00     0.00  QList<Body*>::detach_helper_grow(int, int)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.28% of 3.54 seconds
+
+index % time    self  children    called     name
+                             22870021             TotalFluidConstraint::grad(QList<Particle*>*, int, int) [1]
+[1]     66.5    2.15    0.21       0+22870021 TotalFluidConstraint::grad(QList<Particle*>*, int, int) [1]
+                0.16    0.00 37098350/64508893     TotalFluidConstraint::spikyGrad(glm::detail::tvec2<double, (glm::precision)0> const&, double) [5]
+                0.00    0.05 20083707/20085605     QList<int>::append(int const&) [10]
+                0.00    0.00    2957/2957        TotalFluidConstraint::gradient(QList<Particle*>*, int) [50]
+                             22870021             TotalFluidConstraint::grad(QList<Particle*>*, int, int) [1]
+-----------------------------------------------
+                0.41    0.64     890/890         View::tick() [3]
+[2]     29.8    0.41    0.64     890         Simulation::tick(double) [2]
+                0.43    0.11    5340/5340        TotalFluidConstraint::project(QList<Particle*>*, int*) [4]
+                0.02    0.03     890/892         Solver::setupM(QList<Particle*>*, bool) [9]
+                0.00    0.02     890/890         Solver::setupSizes(int, QList<Constraint*>*) [14]
+                0.02    0.00  124836/124836      BoundaryConstraint::project(QList<Particle*>*, int*) [15]
+                0.00    0.00   43392/43396       QList<Constraint*>::append(Constraint* const&) [44]
+                0.00    0.00   41612/41612       BoundaryConstraint::BoundaryConstraint(int, double, bool, bool, bool) [46]
+                0.00    0.00   41612/41612       BoundaryConstraint::updateCounts(int*) [45]
+                0.00    0.00   41612/41612       BoundaryConstraint::~BoundaryConstraint() [47]
+                0.00    0.00    1780/3632        TotalFluidConstraint::draw(QList<Particle*>*) [49]
+                0.00    0.00     890/893         non-virtual thunk to View::~View() [60]
+                0.00    0.00     890/890         QHash<ConstraintGroup, QList<Constraint*> >::operator[](ConstraintGroup const&) [62]
+                0.00    0.00       1/1           QList<OpenSmokeEmitter*>::detach_helper(int) [101]
+                0.00    0.00       1/1           QList<FluidEmitter*>::detach_helper(int) [100]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]     29.8    0.00    1.05                 View::tick() [3]
+                0.41    0.64     890/890         Simulation::tick(double) [2]
+-----------------------------------------------
+                0.43    0.11    5340/5340        Simulation::tick(double) [2]
+[4]     15.4    0.43    0.11    5340         TotalFluidConstraint::project(QList<Particle*>*, int*) [4]
+                0.11    0.00 27410543/64508893     TotalFluidConstraint::spikyGrad(glm::detail::tvec2<double, (glm::precision)0> const&, double) [5]
+-----------------------------------------------
+                0.11    0.00 27410543/64508893     TotalFluidConstraint::project(QList<Particle*>*, int*) [4]
+                0.16    0.00 37098350/64508893     TotalFluidConstraint::grad(QList<Particle*>*, int, int) [1]
+[5]      7.6    0.27    0.00 64508893         TotalFluidConstraint::spikyGrad(glm::detail::tvec2<double, (glm::precision)0> const&, double) [5]
+-----------------------------------------------
+                0.05    0.05     935/935         Simulation::draw() [7]
+[6]      2.8    0.05    0.05     935         Simulation::drawParticles() [6]
+                0.05    0.00  409914/409914      Simulation::drawCircle() [12]
+                0.00    0.00    8892/8892        Simulation::setColor(int, float) [48]
+-----------------------------------------------
+                0.00    0.10     935/935         View::paintGL() [8]
+[7]      2.8    0.00    0.10     935         Simulation::draw() [7]
+                0.05    0.05     935/935         Simulation::drawParticles() [6]
+                0.00    0.00     935/935         Simulation::drawGrid() [58]
+                0.00    0.00     935/935         Simulation::drawGlobals() [54]
+                0.00    0.00     935/935         Simulation::drawBodies() [53]
+                0.00    0.00     935/935         Simulation::drawSmoke() [59]
+-----------------------------------------------
+                                                 <spontaneous>
+[8]      2.8    0.00    0.10                 View::paintGL() [8]
+                0.00    0.10     935/935         Simulation::draw() [7]
+                0.00    0.00     935/935         Simulation::getNumParticles() [56]
+                0.00    0.00     935/935         Simulation::getKineticEnergy() [57]
+                0.00    0.00     935/935         Simulation::getFrameTime() [55]
+-----------------------------------------------
+                0.00    0.00       2/892         Simulation::init(SimulationType) [23]
+                0.02    0.03     890/892         Simulation::tick(double) [2]
+[9]      1.6    0.02    0.03     892         Solver::setupM(QList<Particle*>*, bool) [9]
+                0.02    0.00     892/1788        std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*) [13]
+                0.01    0.00  771352/771352      std::_Rb_tree_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&) [17]
+                0.00    0.00  771352/771352      std::_Rb_tree_iterator<std::pair<int const, double> > std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, double> >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&) [41]
+-----------------------------------------------
+                0.00    0.00     494/20085605     Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [32]
+                0.00    0.00     702/20085605     Simulation::createFluid(QList<Particle*>*, double) [28]
+                0.00    0.00     702/20085605     TotalFluidConstraint::TotalFluidConstraint(double, QList<int>*) [31]
+                0.00    0.05 20083707/20085605     TotalFluidConstraint::grad(QList<Particle*>*, int, int) [1]
+[10]     1.4    0.00    0.05 20085605         QList<int>::append(int const&) [10]
+                0.05    0.00  869616/869616      QList<int>::detach_helper_grow(int, int) [11]
+-----------------------------------------------
+                0.05    0.00  869616/869616      QList<int>::append(int const&) [10]
+[11]     1.4    0.05    0.00  869616         QList<int>::detach_helper_grow(int, int) [11]
+-----------------------------------------------
+                0.05    0.00  409914/409914      Simulation::drawParticles() [6]
+[12]     1.4    0.05    0.00  409914         Simulation::drawCircle() [12]
+-----------------------------------------------
+                              771352             std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*) [13]
+                0.00    0.00       2/1788        Simulation::~Simulation() [20]
+                0.00    0.00       4/1788        Solver::~Solver() [27]
+                0.02    0.00     890/1788        Solver::setupSizes(int, QList<Constraint*>*) [14]
+                0.02    0.00     892/1788        Solver::setupM(QList<Particle*>*, bool) [9]
+[13]     1.4    0.04    0.01    1788+771352  std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*) [13]
+                0.01    0.00  771352/771352      std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, double> >*) [18]
+                              771352             std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*) [13]
+-----------------------------------------------
+                0.00    0.02     890/890         Simulation::tick(double) [2]
+[14]     0.7    0.00    0.02     890         Solver::setupSizes(int, QList<Constraint*>*) [14]
+                0.02    0.00     890/1788        std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*) [13]
+-----------------------------------------------
+                0.02    0.00  124836/124836      Simulation::tick(double) [2]
+[15]     0.6    0.02    0.00  124836         BoundaryConstraint::project(QList<Particle*>*, int*) [15]
+-----------------------------------------------
+                                                 <spontaneous>
+[16]     0.6    0.02    0.00                 TotalFluidConstraint::poly6(double) [16]
+-----------------------------------------------
+                0.01    0.00  771352/771352      Solver::setupM(QList<Particle*>*, bool) [9]
+[17]     0.3    0.01    0.00  771352         std::_Rb_tree_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&) [17]
+                0.00    0.00  771352/771352      std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, int const&) [40]
+                0.00    0.00     892/892         std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_get_insert_unique_pos(int const&) [61]
+-----------------------------------------------
+                              771352             std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, double> >*) [18]
+                0.01    0.00  771352/771352      std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*) [13]
+[18]     0.3    0.01    0.00  771352+771352  std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, double> >*) [18]
+                              771352             std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, double> >*) [18]
+-----------------------------------------------
+                                                 <spontaneous>
+[19]     0.3    0.01    0.00                 QHash<int, double>::deleteNode2(QHashData::Node*) [19]
+-----------------------------------------------
+                0.00    0.00       1/1           View::~View() [21]
+[20]     0.0    0.00    0.00       1         Simulation::~Simulation() [20]
+                0.00    0.00       2/2           Solver::~Solver() [27]
+                0.00    0.00       2/1788        std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*) [13]
+                0.00    0.00       1/3           Simulation::clear() [73]
+-----------------------------------------------
+                0.00    0.00       1/1           View::~View() [22]
+[21]     0.0    0.00    0.00       1         View::~View() [21]
+                0.00    0.00       1/1           Simulation::~Simulation() [20]
+-----------------------------------------------
+                                                 <spontaneous>
+[22]     0.0    0.00    0.00                 View::~View() [22]
+                0.00    0.00       1/1           View::~View() [21]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::Simulation() [24]
+[23]     0.0    0.00    0.00       1         Simulation::init(SimulationType) [23]
+                0.00    0.00       2/892         Solver::setupM(QList<Particle*>*, bool) [9]
+                0.00    0.00       1/1           Simulation::initWreckingBall() [29]
+                0.00    0.00       1/1           Simulation::initFluid() [30]
+                0.00    0.00       2/3           Simulation::clear() [73]
+-----------------------------------------------
+                0.00    0.00       1/1           View::View(QWidget*) [25]
+[24]     0.0    0.00    0.00       1         Simulation::Simulation() [24]
+                0.00    0.00       1/1           Simulation::init(SimulationType) [23]
+                0.00    0.00       2/2           Solver::Solver() [79]
+-----------------------------------------------
+                0.00    0.00       1/1           MainWindow::MainWindow(QWidget*) [26]
+[25]     0.0    0.00    0.00       1         View::View(QWidget*) [25]
+                0.00    0.00       1/1           Simulation::Simulation() [24]
+-----------------------------------------------
+                                                 <spontaneous>
+[26]     0.0    0.00    0.00                 MainWindow::MainWindow(QWidget*) [26]
+                0.00    0.00       1/1           View::View(QWidget*) [25]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::~Simulation() [20]
+[27]     0.0    0.00    0.00       2         Solver::~Solver() [27]
+                0.00    0.00       4/1788        std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*) [13]
+                0.00    0.00       2/2           LinearData::clean() [76]
+-----------------------------------------------
+                0.00    0.00       1/3           Simulation::initWreckingBall() [29]
+                0.00    0.00       2/3           Simulation::initFluid() [30]
+[28]     0.0    0.00    0.00       3         Simulation::createFluid(QList<Particle*>*, double) [28]
+                0.00    0.00     702/20085605     QList<int>::append(int const&) [10]
+                0.00    0.00       3/3           TotalFluidConstraint::TotalFluidConstraint(double, QList<int>*) [31]
+                0.00    0.00     702/2393        QList<Particle*>::append(Particle* const&) [51]
+                0.00    0.00       3/43396       QList<Constraint*>::append(Constraint* const&) [44]
+                0.00    0.00       1/893         non-virtual thunk to View::~View() [60]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::init(SimulationType) [23]
+[29]     0.0    0.00    0.00       1         Simulation::initWreckingBall() [29]
+                0.00    0.00      41/41          Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [32]
+                0.00    0.00       1/3           Simulation::createFluid(QList<Particle*>*, double) [28]
+                0.00    0.00     765/2393        QList<Particle*>::append(Particle* const&) [51]
+                0.00    0.00      41/43          QList<Particle*>::clear() [64]
+                0.00    0.00      26/26          QList<SDFData>::append(SDFData const&) [70]
+                0.00    0.00       2/893         non-virtual thunk to View::~View() [60]
+                0.00    0.00       1/1           DistanceConstraint::DistanceConstraint(int, int, QList<Particle*>*) [98]
+                0.00    0.00       1/43396       QList<Constraint*>::append(Constraint* const&) [44]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::init(SimulationType) [23]
+[30]     0.0    0.00    0.00       1         Simulation::initFluid() [30]
+                0.00    0.00       2/3           Simulation::createFluid(QList<Particle*>*, double) [28]
+                0.00    0.00     432/2393        QList<Particle*>::append(Particle* const&) [51]
+                0.00    0.00       2/43          QList<Particle*>::clear() [64]
+-----------------------------------------------
+                0.00    0.00       3/3           Simulation::createFluid(QList<Particle*>*, double) [28]
+[31]     0.0    0.00    0.00       3         TotalFluidConstraint::TotalFluidConstraint(double, QList<int>*) [31]
+                0.00    0.00     702/20085605     QList<int>::append(int const&) [10]
+-----------------------------------------------
+                0.00    0.00      41/41          Simulation::initWreckingBall() [29]
+[32]     0.0    0.00    0.00      41         Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [32]
+                0.00    0.00     494/20085605     QList<int>::append(int const&) [10]
+                0.00    0.00     494/2393        QList<Particle*>::append(Particle* const&) [51]
+                0.00    0.00      41/41          Body::computeRs(QList<Particle*>*) [67]
+                0.00    0.00      41/41          Body::updateCOM(QList<Particle*>*, bool) [68]
+                0.00    0.00      41/41          TotalShapeConstraint::TotalShapeConstraint(Body*, double) [65]
+                0.00    0.00       1/1           QList<Body*>::detach_helper_grow(int, int) [102]
+-----------------------------------------------
+                0.00    0.00  771352/771352      std::_Rb_tree_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&) [17]
+[40]     0.0    0.00    0.00  771352         std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, int const&) [40]
+-----------------------------------------------
+                0.00    0.00  771352/771352      Solver::setupM(QList<Particle*>*, bool) [9]
+[41]     0.0    0.00    0.00  771352         std::_Rb_tree_iterator<std::pair<int const, double> > std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, double> >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&) [41]
+                0.00    0.00  771352/771352      std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_unique_pos(int const&) [42]
+                0.00    0.00  771352/771352      std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, double> >, int const&) [43]
+-----------------------------------------------
+                0.00    0.00  771352/771352      std::_Rb_tree_iterator<std::pair<int const, double> > std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, double> >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&) [41]
+[42]     0.0    0.00    0.00  771352         std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_unique_pos(int const&) [42]
+-----------------------------------------------
+                0.00    0.00  771352/771352      std::_Rb_tree_iterator<std::pair<int const, double> > std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, double> >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&) [41]
+[43]     0.0    0.00    0.00  771352         std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, double> >, int const&) [43]
+-----------------------------------------------
+                0.00    0.00       1/43396       Simulation::initWreckingBall() [29]
+                0.00    0.00       3/43396       Simulation::createFluid(QList<Particle*>*, double) [28]
+                0.00    0.00   43392/43396       Simulation::tick(double) [2]
+[44]     0.0    0.00    0.00   43396         QList<Constraint*>::append(Constraint* const&) [44]
+                0.00    0.00    1779/1779        QList<Constraint*>::detach_helper_grow(int, int) [52]
+-----------------------------------------------
+                0.00    0.00   41612/41612       Simulation::tick(double) [2]
+[45]     0.0    0.00    0.00   41612         BoundaryConstraint::updateCounts(int*) [45]
+-----------------------------------------------
+                0.00    0.00   41612/41612       Simulation::tick(double) [2]
+[46]     0.0    0.00    0.00   41612         BoundaryConstraint::BoundaryConstraint(int, double, bool, bool, bool) [46]
+-----------------------------------------------
+                0.00    0.00   41612/41612       Simulation::tick(double) [2]
+[47]     0.0    0.00    0.00   41612         BoundaryConstraint::~BoundaryConstraint() [47]
+-----------------------------------------------
+                0.00    0.00    8892/8892        Simulation::drawParticles() [6]
+[48]     0.0    0.00    0.00    8892         Simulation::setColor(int, float) [48]
+-----------------------------------------------
+                0.00    0.00    1780/3632        Simulation::tick(double) [2]
+                0.00    0.00    1852/3632        Simulation::drawGlobals() [54]
+[49]     0.0    0.00    0.00    3632         TotalFluidConstraint::draw(QList<Particle*>*) [49]
+-----------------------------------------------
+                0.00    0.00    2957/2957        TotalFluidConstraint::grad(QList<Particle*>*, int, int) [1]
+[50]     0.0    0.00    0.00    2957         TotalFluidConstraint::gradient(QList<Particle*>*, int) [50]
+-----------------------------------------------
+                0.00    0.00     432/2393        Simulation::initFluid() [30]
+                0.00    0.00     494/2393        Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [32]
+                0.00    0.00     702/2393        Simulation::createFluid(QList<Particle*>*, double) [28]
+                0.00    0.00     765/2393        Simulation::initWreckingBall() [29]
+[51]     0.0    0.00    0.00    2393         QList<Particle*>::append(Particle* const&) [51]
+                0.00    0.00      45/45          QList<Particle*>::detach_helper_grow(int, int) [63]
+-----------------------------------------------
+                0.00    0.00    1779/1779        QList<Constraint*>::append(Constraint* const&) [44]
+[52]     0.0    0.00    0.00    1779         QList<Constraint*>::detach_helper_grow(int, int) [52]
+-----------------------------------------------
+                0.00    0.00     935/935         Simulation::draw() [7]
+[53]     0.0    0.00    0.00     935         Simulation::drawBodies() [53]
+-----------------------------------------------
+                0.00    0.00     935/935         Simulation::draw() [7]
+[54]     0.0    0.00    0.00     935         Simulation::drawGlobals() [54]
+                0.00    0.00    1852/3632        TotalFluidConstraint::draw(QList<Particle*>*) [49]
+                0.00    0.00      18/18          DistanceConstraint::draw(QList<Particle*>*) [71]
+-----------------------------------------------
+                0.00    0.00     935/935         View::paintGL() [8]
+[55]     0.0    0.00    0.00     935         Simulation::getFrameTime() [55]
+-----------------------------------------------
+                0.00    0.00     935/935         View::paintGL() [8]
+[56]     0.0    0.00    0.00     935         Simulation::getNumParticles() [56]
+-----------------------------------------------
+                0.00    0.00     935/935         View::paintGL() [8]
+[57]     0.0    0.00    0.00     935         Simulation::getKineticEnergy() [57]
+-----------------------------------------------
+                0.00    0.00     935/935         Simulation::draw() [7]
+[58]     0.0    0.00    0.00     935         Simulation::drawGrid() [58]
+-----------------------------------------------
+                0.00    0.00     935/935         Simulation::draw() [7]
+[59]     0.0    0.00    0.00     935         Simulation::drawSmoke() [59]
+-----------------------------------------------
+                0.00    0.00       1/893         Simulation::createFluid(QList<Particle*>*, double) [28]
+                0.00    0.00       2/893         Simulation::initWreckingBall() [29]
+                0.00    0.00     890/893         Simulation::tick(double) [2]
+[60]     0.0    0.00    0.00     893         non-virtual thunk to View::~View() [60]
+-----------------------------------------------
+                0.00    0.00     892/892         std::_Rb_tree_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&) [17]
+[61]     0.0    0.00    0.00     892         std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_get_insert_unique_pos(int const&) [61]
+-----------------------------------------------
+                0.00    0.00     890/890         Simulation::tick(double) [2]
+[62]     0.0    0.00    0.00     890         QHash<ConstraintGroup, QList<Constraint*> >::operator[](ConstraintGroup const&) [62]
+-----------------------------------------------
+                0.00    0.00      45/45          QList<Particle*>::append(Particle* const&) [51]
+[63]     0.0    0.00    0.00      45         QList<Particle*>::detach_helper_grow(int, int) [63]
+-----------------------------------------------
+                0.00    0.00       2/43          Simulation::initFluid() [30]
+                0.00    0.00      41/43          Simulation::initWreckingBall() [29]
+[64]     0.0    0.00    0.00      43         QList<Particle*>::clear() [64]
+-----------------------------------------------
+                0.00    0.00      41/41          Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [32]
+[65]     0.0    0.00    0.00      41         TotalShapeConstraint::TotalShapeConstraint(Body*, double) [65]
+-----------------------------------------------
+                0.00    0.00      41/41          Simulation::clear() [73]
+[66]     0.0    0.00    0.00      41         TotalShapeConstraint::~TotalShapeConstraint() [66]
+-----------------------------------------------
+                0.00    0.00      41/41          Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [32]
+[67]     0.0    0.00    0.00      41         Body::computeRs(QList<Particle*>*) [67]
+-----------------------------------------------
+                0.00    0.00      41/41          Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [32]
+[68]     0.0    0.00    0.00      41         Body::updateCOM(QList<Particle*>*, bool) [68]
+                0.00    0.00      41/41          std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::operator=(std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > > const&) [69]
+-----------------------------------------------
+                0.00    0.00      41/41          Body::updateCOM(QList<Particle*>*, bool) [68]
+[69]     0.0    0.00    0.00      41         std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::operator=(std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > > const&) [69]
+-----------------------------------------------
+                0.00    0.00      26/26          Simulation::initWreckingBall() [29]
+[70]     0.0    0.00    0.00      26         QList<SDFData>::append(SDFData const&) [70]
+                0.00    0.00       2/2           QList<SDFData>::detach_helper_grow(int, int) [77]
+-----------------------------------------------
+                0.00    0.00      18/18          Simulation::drawGlobals() [54]
+[71]     0.0    0.00    0.00      18         DistanceConstraint::draw(QList<Particle*>*) [71]
+-----------------------------------------------
+                0.00    0.00      12/12          Simulation::clear() [73]
+[72]     0.0    0.00    0.00      12         QList<Constraint*>::removeAll(Constraint* const&) [72]
+                0.00    0.00       2/2           QList<Constraint*>::detach_helper(int) [78]
+-----------------------------------------------
+                0.00    0.00       1/3           Simulation::~Simulation() [20]
+                0.00    0.00       2/3           Simulation::init(SimulationType) [23]
+[73]     0.0    0.00    0.00       3         Simulation::clear() [73]
+                0.00    0.00      41/41          TotalShapeConstraint::~TotalShapeConstraint() [66]
+                0.00    0.00      12/12          QList<Constraint*>::removeAll(Constraint* const&) [72]
+                0.00    0.00       3/3           TotalFluidConstraint::~TotalFluidConstraint() [74]
+                0.00    0.00       1/1           DistanceConstraint::~DistanceConstraint() [99]
+-----------------------------------------------
+                0.00    0.00       3/3           Simulation::clear() [73]
+[74]     0.0    0.00    0.00       3         TotalFluidConstraint::~TotalFluidConstraint() [74]
+                0.00    0.00       3/3           TotalFluidConstraint::~TotalFluidConstraint() [75]
+-----------------------------------------------
+                0.00    0.00       3/3           TotalFluidConstraint::~TotalFluidConstraint() [74]
+[75]     0.0    0.00    0.00       3         TotalFluidConstraint::~TotalFluidConstraint() [75]
+-----------------------------------------------
+                0.00    0.00       2/2           Solver::~Solver() [27]
+[76]     0.0    0.00    0.00       2         LinearData::clean() [76]
+-----------------------------------------------
+                0.00    0.00       2/2           QList<SDFData>::append(SDFData const&) [70]
+[77]     0.0    0.00    0.00       2         QList<SDFData>::detach_helper_grow(int, int) [77]
+-----------------------------------------------
+                0.00    0.00       2/2           QList<Constraint*>::removeAll(Constraint* const&) [72]
+[78]     0.0    0.00    0.00       2         QList<Constraint*>::detach_helper(int) [78]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Simulation() [24]
+[79]     0.0    0.00    0.00       2         Solver::Solver() [79]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[80]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN10LinearData5cleanEv [80]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[81]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN10MainWindowC2EP7QWidget [81]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[82]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN10SimulationC2Ev [82]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[83]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN12FluidEmitterC2EN3glm6detail5tvec2IdLNS0_9precisionE0EEEdP20TotalFluidConstraint [83]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[84]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN13GasConstraintC2EdP5QListIiEb [84]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[85]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN16OpenSmokeEmitterC2EN3glm6detail5tvec2IdLNS0_9precisionE0EEEdP13GasConstraint [85]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[86]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN17ContactConstraintC2Eiib [86]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[87]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN18BoundaryConstraintC2Eidbbb [87]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[88]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN18DistanceConstraintC2Ediib [88]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[89]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN20TotalFluidConstraintC2EdP5QListIiE [89]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[90]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN20TotalShapeConstraintC2EP4Bodyd [90]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[91]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN22RigidContactConstraintC2EiiP5QListIP4BodyEb [91]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[92]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN4View18qt_static_metacallEP7QObjectN11QMetaObject4CallEiPPv [92]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[93]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN4ViewC2EP7QWidget [93]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[94]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN6SolverC2Ev [94]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[95]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN8Particle10getSDFDataEP5QListIP4BodyEi [95]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [241]
+[96]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZNK12SparseMatrix12getTransposeEv [96]
+-----------------------------------------------
+                0.00    0.00       1/1           View::resizeGL(int, int) [204]
+[97]     0.0    0.00    0.00       1         Simulation::resize(glm::detail::tvec2<int, (glm::precision)0> const&) [97]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::initWreckingBall() [29]
+[98]     0.0    0.00    0.00       1         DistanceConstraint::DistanceConstraint(int, int, QList<Particle*>*) [98]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::clear() [73]
+[99]     0.0    0.00    0.00       1         DistanceConstraint::~DistanceConstraint() [99]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::tick(double) [2]
+[100]    0.0    0.00    0.00       1         QList<FluidEmitter*>::detach_helper(int) [100]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::tick(double) [2]
+[101]    0.0    0.00    0.00       1         QList<OpenSmokeEmitter*>::detach_helper(int) [101]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [32]
+[102]    0.0    0.00    0.00       1         QList<Body*>::detach_helper_grow(int, int) [102]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [80] _GLOBAL__sub_I__ZN10LinearData5cleanEv [73] Simulation::clear() [19] QHash<int, double>::deleteNode2(QHashData::Node*)
+  [81] _GLOBAL__sub_I__ZN10MainWindowC2EP7QWidget [97] Simulation::resize(glm::detail::tvec2<int, (glm::precision)0> const&) [77] QList<SDFData>::detach_helper_grow(int, int)
+  [82] _GLOBAL__sub_I__ZN10SimulationC2Ev [58] Simulation::drawGrid() [70] QList<SDFData>::append(SDFData const&)
+  [83] _GLOBAL__sub_I__ZN12FluidEmitterC2EN3glm6detail5tvec2IdLNS0_9precisionE0EEEdP20TotalFluidConstraint [48] Simulation::setColor(int, float) [78] QList<Constraint*>::detach_helper(int)
+  [84] _GLOBAL__sub_I__ZN13GasConstraintC2EdP5QListIiEb [59] Simulation::drawSmoke() [52] QList<Constraint*>::detach_helper_grow(int, int)
+  [85] _GLOBAL__sub_I__ZN16OpenSmokeEmitterC2EN3glm6detail5tvec2IdLNS0_9precisionE0EEEdP13GasConstraint [30] Simulation::initFluid() [44] QList<Constraint*>::append(Constraint* const&)
+  [86] _GLOBAL__sub_I__ZN17ContactConstraintC2Eiib [24] Simulation::Simulation() [72] QList<Constraint*>::removeAll(Constraint* const&)
+  [87] _GLOBAL__sub_I__ZN18BoundaryConstraintC2Eidbbb [20] Simulation::~Simulation() [100] QList<FluidEmitter*>::detach_helper(int)
+  [88] _GLOBAL__sub_I__ZN18DistanceConstraintC2Ediib [45] BoundaryConstraint::updateCounts(int*) [101] QList<OpenSmokeEmitter*>::detach_helper(int)
+  [89] _GLOBAL__sub_I__ZN20TotalFluidConstraintC2EdP5QListIiE [15] BoundaryConstraint::project(QList<Particle*>*, int*) [102] QList<Body*>::detach_helper_grow(int, int)
+  [90] _GLOBAL__sub_I__ZN20TotalShapeConstraintC2EP4Bodyd [46] BoundaryConstraint::BoundaryConstraint(int, double, bool, bool, bool) [63] QList<Particle*>::detach_helper_grow(int, int)
+  [91] _GLOBAL__sub_I__ZN22RigidContactConstraintC2EiiP5QListIP4BodyEb [47] BoundaryConstraint::~BoundaryConstraint() [64] QList<Particle*>::clear()
+  [92] _GLOBAL__sub_I__ZN4View18qt_static_metacallEP7QObjectN11QMetaObject4CallEiPPv [71] DistanceConstraint::draw(QList<Particle*>*) [51] QList<Particle*>::append(Particle* const&)
+  [93] _GLOBAL__sub_I__ZN4ViewC2EP7QWidget [98] DistanceConstraint::DistanceConstraint(int, int, QList<Particle*>*) [11] QList<int>::detach_helper_grow(int, int)
+  [94] _GLOBAL__sub_I__ZN6SolverC2Ev [99] DistanceConstraint::~DistanceConstraint() [10] QList<int>::append(int const&)
+  [95] _GLOBAL__sub_I__ZN8Particle10getSDFDataEP5QListIP4BodyEi [49] TotalFluidConstraint::draw(QList<Particle*>*) [14] Solver::setupSizes(int, QList<Constraint*>*)
+  [96] _GLOBAL__sub_I__ZNK12SparseMatrix12getTransposeEv [1] TotalFluidConstraint::grad(QList<Particle*>*, int, int) [9] Solver::setupM(QList<Particle*>*, bool)
+  [76] LinearData::clean()    [16] TotalFluidConstraint::poly6(double) [79] Solver::Solver()
+  [53] Simulation::drawBodies() [4] TotalFluidConstraint::project(QList<Particle*>*, int*) [27] Solver::~Solver()
+  [12] Simulation::drawCircle() [50] TotalFluidConstraint::gradient(QList<Particle*>*, int) [17] std::_Rb_tree_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&)
+  [28] Simulation::createFluid(QList<Particle*>*, double) [5] TotalFluidConstraint::spikyGrad(glm::detail::tvec2<double, (glm::precision)0> const&, double) [61] std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_get_insert_unique_pos(int const&)
+  [54] Simulation::drawGlobals() [31] TotalFluidConstraint::TotalFluidConstraint(double, QList<int>*) [40] std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, int const&)
+  [55] Simulation::getFrameTime() [74] TotalFluidConstraint::~TotalFluidConstraint() [13] std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::_M_erase(std::_Rb_tree_node<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >*)
+   [6] Simulation::drawParticles() [75] TotalFluidConstraint::~TotalFluidConstraint() [69] std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > >::operator=(std::_Rb_tree<int, std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > >, std::_Select1st<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > >, std::less<int>, std::allocator<std::pair<int const, std::map<int, double, std::less<int>, std::allocator<std::pair<int const, double> > > > > > const&)
+  [32] Simulation::createRigidBody(QList<Particle*>*, QList<SDFData>*) [65] TotalShapeConstraint::TotalShapeConstraint(Body*, double) [41] std::_Rb_tree_iterator<std::pair<int const, double> > std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<int const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<int const, double> >, std::piecewise_construct_t const&, std::tuple<int const&>&&, std::tuple<>&&)
+  [56] Simulation::getNumParticles() [66] TotalShapeConstraint::~TotalShapeConstraint() [42] std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_unique_pos(int const&)
+  [57] Simulation::getKineticEnergy() [67] Body::computeRs(QList<Particle*>*) [43] std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<int const, double> >, int const&)
+  [29] Simulation::initWreckingBall() [68] Body::updateCOM(QList<Particle*>*, bool) [18] std::_Rb_tree<int, std::pair<int const, double>, std::_Select1st<std::pair<int const, double> >, std::less<int>, std::allocator<std::pair<int const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, double> >*)
+   [7] Simulation::draw()     [25] View::View(QWidget*)   [60] non-virtual thunk to View::~View()
+  [23] Simulation::init(SimulationType) [21] View::~View()
+   [2] Simulation::tick(double) [62] QHash<ConstraintGroup, QList<Constraint*> >::operator[](ConstraintGroup const&)
