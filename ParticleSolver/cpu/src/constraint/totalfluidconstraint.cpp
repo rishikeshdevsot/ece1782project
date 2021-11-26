@@ -42,6 +42,7 @@ void TotalFluidConstraint::project(QList<Particle *> *estimates, int *counts)
 {
     // Find neighboring particles and estimate pi for each particle
     lambdas.clear();
+    #pragma omp parallel for
     for (int k = 0; k < ps.size(); k++) {
         neighbors[k].clear();
         int i = ps[k];
@@ -62,7 +63,8 @@ void TotalFluidConstraint::project(QList<Particle *> *estimates, int *counts)
                 if (rlen2 < H2) {
 
                     // Found a neighbor! Remember it and add to pi and the gamma denominator
-                    neighbors[k].append(j);
+                    #pragma omp critical
+                    { neighbors[k].append(j); }
                     double incr = poly6(rlen2) / p_j->imass;
                     if (p_j->ph == SOLID) {
                         incr *= S_SOLID;
@@ -81,12 +83,15 @@ void TotalFluidConstraint::project(QList<Particle *> *estimates, int *counts)
         }
 
         glm::dvec2 gr = grad(estimates, k, i);
+        #pragma omp critical 
+        {
         denom += glm::dot(gr, gr);
 
         // Compute the gamma value
 //        cout << i << " estimated " << pi << endl;
         double lambda = -((pi / p0) - 1.) / (denom + RELAXATION);
         lambdas[i] = lambda;
+        }
     }
 
     // Compute actual deltas
