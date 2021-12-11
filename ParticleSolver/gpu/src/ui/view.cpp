@@ -165,7 +165,7 @@ void View::tick()
     fps = .02f / seconds + .98f * fps;
 
     // update app
-    m_app->tick(seconds);
+    m_app->tick(0.02);
 
     // don't show cursor
     QApplication::setOverrideCursor(Qt::CrossCursor);
