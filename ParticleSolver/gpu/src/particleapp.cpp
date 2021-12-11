@@ -13,7 +13,7 @@
 #include <QKeyEvent>
 #include <random>
 #include <unistd.h>
-
+#include <chrono>
 #include "particleapp.h"
 #include "particlesystem.h"
 #include "renderer.h"
@@ -34,7 +34,7 @@ ParticleApp::ParticleApp()
       m_timer(-1.f)
 {
     cudaInit();
-
+    frameTime = 0;
     m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-50, 0, -50), make_int3(50, 200, 50), 5);
     m_renderer = new Renderer(m_particleSystem->getMinBounds(), m_particleSystem->getMaxBounds());
     m_renderer->createVAO(m_particleSystem->getCurrentReadBuffer(),
@@ -71,6 +71,8 @@ void ParticleApp::makeInitScene()
 
 void ParticleApp::tick(float secs)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     if (m_fluidEmmiterOn && m_timer <= 0.f)
     {
         m_particleSystem->addFluid(make_int3(-1,0,-1), make_int3(1,1,1), 1.f, 1.f, make_float3(0,0,1));
@@ -80,6 +82,9 @@ void ParticleApp::tick(float secs)
 
     m_particleSystem->update(secs);
     m_renderer->update(secs);
+
+    auto stop = std::chrono::high_resolution_clock::now();
+    frameTime = 0.02 * std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() + 0.98 * frameTime;
 }
 
 

@@ -83,7 +83,7 @@ void View::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(.3f, .3f, .3f, 1.f);
 
-    QString title = "PARTICLES TEST      FPS: " + QString::number((int) fps);
+    QString title = "PARTICLES TEST      FPS: " + QString::number((int) fps) + "    TimePerFrame: "+QString::number(m_app->getFrameTime());
     emit changeTitle(title);
 
     m_app->render();

@@ -25,6 +25,8 @@ public:
     void keyReleased(QKeyEvent *e);
 
     void resize(int w, int h);
+    int getFrameTime() { return frameTime; }
+    int frameTime;
 
 private:
     void makeInitScene();
