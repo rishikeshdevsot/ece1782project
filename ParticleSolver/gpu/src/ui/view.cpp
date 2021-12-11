@@ -23,6 +23,7 @@ View::View(QGLFormat format, QWidget *parent)
     connect(&timer, SIGNAL(timeout()), this, SLOT(tick()));
 
     m_app = NULL;
+    fps = 0;
 }
 
 View::~View()
