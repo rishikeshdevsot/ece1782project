@@ -109,7 +109,8 @@ double RigidContactConstraint::evaluate(QList<Particle *> *estimates)
         glm::dvec2 x12 = p2->getP(stabile) - p1->getP(stabile);
         double len = glm::length(x12);
         d = PARTICLE_DIAM - len;
-        n = len > EPSILON ? -x12 / len : glm::dvec2(0,1);
+        if (d < EPSILON) return 0.0;
+        n = x12 / len;
     } else {
         if (dat1.distance < dat2.distance) {
             d = dat1.distance;
@@ -120,7 +121,7 @@ double RigidContactConstraint::evaluate(QList<Particle *> *estimates)
         }
 
         if (d < PARTICLE_DIAM + EPSILON) {
-            initBoundary(p1, p2);
+            if (initBoundary(p1, p2)) return 0.0;
         }
     }
 
@@ -130,11 +131,11 @@ double RigidContactConstraint::evaluate(QList<Particle *> *estimates)
 glm::dvec2 RigidContactConstraint::gradient(QList<Particle *> *estimates, int respect)
 {
     if (respect == i1) {
-        return -n;
+        return glm::normalize(n);
     }
 
     if (respect == i2) {
-        return n;
+        return  glm::normalize(-n);
     }
 
     return glm::dvec2();
