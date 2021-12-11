@@ -486,16 +486,17 @@ extern "C"
                                                   numParticles,
                                                   dNeighbors,
                                                   dNumNeighbors,
+                                                  (float4 *) particles,
                                                   dRos);
 
         // execute the kernel
-        solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
-                                                  gridParticleIndex,
-                                                  (float4 *) particles,
-                                                  numParticles,
-                                                  dNeighbors,
-                                                  dNumNeighbors,
-                                                  dRos);
+        // solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
+        //                                           gridParticleIndex,
+        //                                           (float4 *) particles,
+        //                                           numParticles,
+        //                                           dNeighbors,
+        //                                           dNumNeighbors,
+        //                                           dRos);
 
         // check if kernel invocation generated an error
         getLastCudaError("Kernel execution failed");

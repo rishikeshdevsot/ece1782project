@@ -522,6 +522,8 @@ void collideCellRadius(int3    gridPos,
 
 }
 
+//TODO NEXT: oldpos of neighbors is loaded 3 times, load once is enough, just make them 
+// to shared memory and reuse for the later 2 accesses.  
 
 __global__
 void findLambdasD(float  *lambda,               // input: sorted positions
@@ -531,6 +533,7 @@ void findLambdasD(float  *lambda,               // input: sorted positions
                   uint    numParticles,
                   uint   *neighbors,
                   uint   *numNeighbors,
+                  float4 *particles,
                   float  *ros)
 {
     uint index = __mul24(blockIdx.x,blockDim.x) + threadIdx.x;
@@ -541,7 +544,8 @@ void findLambdasD(float  *lambda,               // input: sorted positions
     if (phase != FLUID) return;
 
     // read particle data from sorted arrays
-    float3 pos = make_float3(FETCH(oldPos, index));
+    float4 k2_pos = FETCH(oldPos, index);
+    float3 pos = make_float3(k2_pos);
 
     // get address in grid
     int3 gridPos = calcGridPos(pos);
@@ -629,32 +633,16 @@ void findLambdasD(float  *lambda,               // input: sorted positions
     denom += dot(grad, grad);
     // TODO: this definitely can go shared memory if we fuse the 2 kernels
     lambda[index] = - ((ro / ros[gridParticleIndex[index]]) - 1) / (denom + FLUID_RELAXATION);
-}
 
+    ///////////////////////////// THIS IS THE KERNEL FUSION BOUNDARY ///////////////////////
+    __syncthreads();
 
-__global__
-void solveFluidsD(float  *lambda,              // input: sorted positions
-                  uint   *gridParticleIndex,    // input: sorted particle indices
-                  float4 *particles,
-                  uint    numParticles,
-                  uint   *neighbors,
-                  uint   *numNeighbors,
-                  float  *ros)
-{
-    uint index = __mul24(blockIdx.x,blockDim.x) + threadIdx.x;
-
-    if (index >= numParticles) return;
-
-    int phase = FETCH(oldPhase, index);
-    if (phase != FLUID) return;
-
-    float4 pos = FETCH(oldPos, index);
 
     float4 delta = make_float4(0.f);
-    for (uint i = 0; i < numNeighbors[index]; i++)
+    for (uint i = 0; i < numNeighborsLocal; i++)
     {
-        float4 pos2 =  FETCH(oldPos, neighbors[index * MAX_FLUID_NEIGHBORS + i]);
-        float4 r = pos - pos2;
+        float4 k2_pos2 =  FETCH(oldPos, neighbors[index * MAX_FLUID_NEIGHBORS + i]);
+        float4 r = k2_pos - k2_pos2;
         float rlen2 = dot(r, r);
         float rlen = sqrt(rlen2);
         float hMinus2 = H2 - rlen2;
@@ -676,7 +664,7 @@ void solveFluidsD(float  *lambda,              // input: sorted positions
     }
 
     uint origIndex = gridParticleIndex[index];
-    particles[origIndex] += delta / (ros[gridParticleIndex[index]] + numNeighbors[index]);
+    particles[origIndex] += delta / (ros[gridParticleIndex[index]] + numNeighborsLocal);
 }
 
 #endif // INTEGRATION_KERNEL_H
