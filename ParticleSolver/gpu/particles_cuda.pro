@@ -112,7 +112,6 @@ macx {
 }
 
 if ( exists( $$CUDA_DIR/ ) ) {
-    message( "Configuring for cuda..." );
     DEFINES += CUDA
 
 # Cuda sources
