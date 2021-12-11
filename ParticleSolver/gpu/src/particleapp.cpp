@@ -140,7 +140,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
     bool resetVbo = true;
     float3 h, vec;
     float angle;
-
+    unsigned int scale = 10;
 
     // numbers 0-9 toggle different scenes
     switch (e->key())
@@ -157,10 +157,11 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         break;
     case Qt::Key_3: // two fluids, different densities
         delete m_particleSystem;
-        m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-7, 0, -5), make_int3(7, 20, 5), 5);
-        m_particleSystem->addFluid(make_int3(-7, 0, -5), make_int3(7, 5, 5), 1.f, 2.f, colors[rand() % numColors]);
-        m_particleSystem->addFluid(make_int3(-7, 5, -5), make_int3(7, 10, 5), 1.f, 3.f, colors[rand() % numColors]);
-        break;
+        m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-2*scale, 0, -scale),
+                                              make_int3(2*scale, 60, scale), 20);
+        m_particleSystem->addFluid(make_int3(-2*scale, 0, -scale), make_int3(2*scale, 2*scale, scale), 1.f, 2.f, colors[rand() % numColors]);
+        m_particleSystem->addFluid(make_int3(-2*scale, 2*scale, -scale), make_int3(2*scale, 4*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
+	break;
     case Qt::Key_4: // one solid particle stack
         delete m_particleSystem;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-50, 0, -50), make_int3(50, 200, 50), 5);
