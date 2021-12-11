@@ -551,7 +551,7 @@ void findLambdasD(float  *lambda,               // input: sorted positions
     int rad = (int)ceil(H / params.cellSize.x);
 
     // TODO: eliminate the access of this into just a single write, everything else is inrelavant here
-    numNeighbors[index] = 0;
+    unsigned int numNeighborsLocal = 0;
     for (int z=-rad; z<=rad; z++)
     {
         for (int y=-rad; y<=rad; y++)
@@ -559,17 +559,47 @@ void findLambdasD(float  *lambda,               // input: sorted positions
             for (int x=-rad; x<=rad; x++)
             {
                 int3 neighbourPos = gridPos + make_int3(x, y, z);
-                collideCellRadius(neighbourPos, index, pos, cellStart, cellEnd, neighbors, numNeighbors);
+                uint gridHash = calcGridHash(neighbourPos);
+
+                // get start of bucket for this cell
+                uint startIndex = FETCH(cellStart, gridHash);
+
+                if (startIndex != 0xffffffff)          // cell is not empty
+                {
+                    // iterate over particles in this cell
+                    uint endIndex = FETCH(cellEnd, gridHash);
+
+                    for (uint j=startIndex; j<endIndex; j++)
+                    {
+                        if (j != index)                // check not colliding with self
+                        {
+                            // TODO: pos2 can be saved into shared memory
+                            float3 pos2 = make_float3(FETCH(oldPos, j));
+
+                            float3 relPos = pos - pos2;
+                            float dist2 = dot(relPos, relPos);
+                            if (dist2 < H2 && numNeighborsLocal < MAX_FLUID_NEIGHBORS)
+                            {
+                                // neighbor stuff
+                                // TODO: coalse the wirte to this variable
+                                neighbors[index * MAX_FLUID_NEIGHBORS + numNeighborsLocal] = j;
+                                numNeighborsLocal += 1;
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }
-    // numNeighbors should only be written here
+    numNeighbors[index] = numNeighborsLocal;
+
     float w = FETCH(invMass, index);
     float ro = 0.f;
     float denom = 0.f;
     float3 grad = make_float3(0.f);
     // TODO: this read should be eliminated as well!
-    for (uint i = 0; i < numNeighbors[index]; i++)
+    for (uint i = 0; i < numNeighborsLocal; i++)
     {
         // TODO: this again is a global memory read that we do not need so far
         uint ni = neighbors[index * MAX_FLUID_NEIGHBORS + i];
