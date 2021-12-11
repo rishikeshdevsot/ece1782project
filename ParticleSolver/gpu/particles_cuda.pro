@@ -84,14 +84,14 @@ RESOURCES += \
 
 unix:!macx {
     # Path to cuda stuff
-    CUDA_DIR = /contrib/projects/cuda5-toolkit
+    CUDA_DIR = /usr/local/cuda
     CUDA_LIB = $$CUDA_DIR/lib64
 
-    CUDA_DEF += -DCUDA_5
-    DEFINES += CUDA_5
+    CUDA_DEF += -DCUDA_11
+    DEFINES += CUDA_11
 
     # GPU architecture
-    CUDA_ARCH     = sm_21 # should be able to detect this somehow instead of hardcoding
+    CUDA_ARCH     = sm_75 # should be able to detect this somehow instead of hardcoding
 
     SED_STUFF = 2>&1 | sed -r \"s/\\(([0-9]+)\\)/:\\1/g\" 1>&2
 }
