@@ -35,11 +35,10 @@ ParticleApp::ParticleApp()
 {
     cudaInit();
     frameTime = 0;
-    m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-50, 0, -50), make_int3(50, 200, 50), 5);
+    makeInitScene();
     m_renderer = new Renderer(m_particleSystem->getMinBounds(), m_particleSystem->getMaxBounds());
     m_renderer->createVAO(m_particleSystem->getCurrentReadBuffer(),
                           m_particleSystem->getParticleRadius());
-    makeInitScene();
 }
 
 
@@ -65,7 +64,12 @@ inline float frand()
 
 void ParticleApp::makeInitScene()
 {
-    m_particleSystem->addRope(make_float3(0, 20, 0), make_float3(0, -.5, 0), .4f, 32, 1.f, true);
+    unsigned int scale = 10;
+
+    m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-2*scale, 0, -scale),
+                                            make_int3(2*scale, 60, scale), 20);
+    m_particleSystem->addFluid(make_int3(-2*scale, 0, -scale), make_int3(2*scale, 2*scale, scale), 1.f, 2.f, colors[rand() % numColors]);
+    m_particleSystem->addFluid(make_int3(-2*scale, 2*scale, -scale), make_int3(2*scale, 4*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
 }
 
 
@@ -148,7 +152,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
     case Qt::Key_1: // single rope
         delete m_particleSystem;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-50, 0, -50), make_int3(50, 200, 50), 5);
-        makeInitScene();
+        m_particleSystem->addRope(make_float3(0, 20, 0), make_float3(0, -.5, 0), .4f, 32, 1.f, true);
         break;
     case Qt::Key_2: // single cloth
         delete m_particleSystem;
