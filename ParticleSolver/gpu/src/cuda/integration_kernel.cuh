@@ -492,6 +492,7 @@ void collideCellRadius(int3    gridPos,
     // get start of bucket for this cell
     uint startIndex = FETCH(cellStart, gridHash);
 
+    int num_neighbors = numNeighbors[index];
     if (startIndex != 0xffffffff)          // cell is not empty
     {
         // iterate over particles in this cell
@@ -501,19 +502,23 @@ void collideCellRadius(int3    gridPos,
         {
             if (j != index)                // check not colliding with self
             {
+                // TODO: pos2 can be saved into shared memory
                 float3 pos2 = make_float3(FETCH(oldPos, j));
 
                 float3 relPos = pos - pos2;
                 float dist2 = dot(relPos, relPos);
-                if (dist2 < H2 && numNeighbors[index] < MAX_FLUID_NEIGHBORS)
+                if (dist2 < H2 && num_neighbors < MAX_FLUID_NEIGHBORS)
                 {
                     // neighbor stuff
-                    neighbors[index * MAX_FLUID_NEIGHBORS + numNeighbors[index]] = j;
-                    numNeighbors[index] += 1;
+                    // TODO: coalse the wirte to this variable
+                    neighbors[index * MAX_FLUID_NEIGHBORS + num_neighbors] = j;
+                    num_neighbors += 1;
                 }
             }
         }
     }
+    numNeighbors[index] = num_neighbors;
+
 
 }
 
@@ -542,9 +547,10 @@ void findLambdasD(float  *lambda,               // input: sorted positions
     int3 gridPos = calcGridPos(pos);
 
     // examine neighbouring cells
-
+    // TODO: make constant
     int rad = (int)ceil(H / params.cellSize.x);
 
+    // TODO: eliminate the access of this into just a single write, everything else is inrelavant here
     numNeighbors[index] = 0;
     for (int z=-rad; z<=rad; z++)
     {
@@ -557,16 +563,18 @@ void findLambdasD(float  *lambda,               // input: sorted positions
             }
         }
     }
-
+    // numNeighbors should only be written here
     float w = FETCH(invMass, index);
     float ro = 0.f;
     float denom = 0.f;
     float3 grad = make_float3(0.f);
+    // TODO: this read should be eliminated as well!
     for (uint i = 0; i < numNeighbors[index]; i++)
     {
+        // TODO: this again is a global memory read that we do not need so far
         uint ni = neighbors[index * MAX_FLUID_NEIGHBORS + i];
         float3 pos2 =  make_float3(FETCH(oldPos, ni));
-//        float w2 = FETCH(invMass, ni);
+//      float w2 = FETCH(invMass, ni);
         float3 r = pos - pos2;
         float rlen2 = dot(r, r);
         float rlen = sqrt(rlen2);
@@ -586,9 +594,10 @@ void findLambdasD(float  *lambda,               // input: sorted positions
         grad += -spikeyGrad;
         denom += dot(spikeyGrad, spikeyGrad);
     }
+    // make this constexpr
     ro += (POLY6_COEFF * H6 ) / w;
     denom += dot(grad, grad);
-
+    // TODO: this definitely can go shared memory if we fuse the 2 kernels
     lambda[index] = - ((ro / ros[gridParticleIndex[index]]) - 1) / (denom + FLUID_RELAXATION);
 }
 
@@ -638,8 +647,8 @@ void solveFluidsD(float  *lambda,              // input: sorted positions
 
     uint origIndex = gridParticleIndex[index];
     particles[origIndex] += delta / (ros[gridParticleIndex[index]] + numNeighbors[index]);
-
 }
 
 #endif // INTEGRATION_KERNEL_H
+
 
