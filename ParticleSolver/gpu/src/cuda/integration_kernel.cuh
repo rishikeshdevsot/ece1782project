@@ -199,7 +199,7 @@ __device__ uint calcGridHash(int3 gridPos)
     gridPos.x = gridPos.x & (params.gridSize.x-1);  // wrap grid, assumes size is power of 2
     gridPos.y = gridPos.y & (params.gridSize.y-1);
     gridPos.z = gridPos.z & (params.gridSize.z-1);
-    return __umul24(__umul24(gridPos.z, params.gridSize.y), params.gridSize.x) + __umul24(gridPos.y, params.gridSize.x) + gridPos.x;
+    return ((gridPos.z * params.gridSize.y) * params.gridSize.x) + gridPos.y * params.gridSize.x + gridPos.x;
 }
 
 // calculate grid hash value for each particle
@@ -209,7 +209,7 @@ void calcHashD(uint   *gridParticleHash,  // output
                float4 *pos,               // input: positions
                uint    numParticles)
 {
-    uint index = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+    uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (index >= numParticles) return;
 
@@ -240,7 +240,7 @@ void reorderDataAndFindCellStartD(uint   *cellStart,        // output: cell star
                                   uint    numParticles)
 {
     extern __shared__ uint sharedHash[];    // blockSize + 1 elements
-    uint index = __umul24(blockIdx.x,blockDim.x) + threadIdx.x;
+    uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
     uint hash;
 
@@ -368,7 +368,7 @@ void collideD(float4 *newPos,               // output: new pos
               uint   *neighbors,
               uint   *numNeighbors)
 {
-    uint index = __mul24(blockIdx.x,blockDim.x) + threadIdx.x;
+    uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (index >= numParticles) return;
 
@@ -539,7 +539,7 @@ void findLambdasD(float  *lambda,               // input: sorted positions
 {
     //__shared__ float4 neighborPosCache[];
 
-    uint index = __mul24(blockIdx.x,blockDim.x) + threadIdx.x;
+    uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (index >= numParticles) return;
 

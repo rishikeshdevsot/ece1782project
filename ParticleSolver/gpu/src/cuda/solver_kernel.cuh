@@ -243,7 +243,7 @@ void constraintCentricSolveD(float      *A,
                              uint       maxIter,
                              float      omega)
 {
-    uint index = __umul24(blockIdx.x,blockDim.x) + threadIdx.x;
+    uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (index < numConstraints)
     {
