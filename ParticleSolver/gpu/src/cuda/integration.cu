@@ -27,6 +27,7 @@ thrust::device_vector<float> denom;
 thrust::device_vector<float> ros;
 
 thrust::device_vector<uint> neighbors;
+// thrust::device_vector<float4> neighborsPosCache;
 thrust::device_vector<uint> numNeighbors;
 
 thrust::device_vector<float> textureVec;
@@ -51,6 +52,7 @@ extern "C"
     {
         int sizeV = V.size();
         int sizeRo = ros.size();
+        // neighborsPosCache.resize(V.size() * MAX_FLUID_NEIGHBORS);
 
         // resize the vectors
         V.resize(sizeV + 4 * numParticles);
@@ -68,6 +70,7 @@ extern "C"
         lambda.resize(ros.size());
         numNeighbors.resize(ros.size());
         neighbors.resize(V.size() * MAX_FLUID_NEIGHBORS);
+        //std::cout << V.size() * MAX_FLUID_NEIGHBORS <<std::endl;
         textureVec.resize(V.size());
     }
 
@@ -78,6 +81,7 @@ extern "C"
          denom.clear();
          ros.clear();
          neighbors.clear();
+         // neighborsPosCache.clear();
          numNeighbors.clear();
          textureVec.clear();
 
@@ -88,7 +92,7 @@ extern "C"
          neighbors.shrink_to_fit();
          numNeighbors.shrink_to_fit();
          textureVec.shrink_to_fit();
-
+         // neighborsPosCache.shrink_to_fit();
          checkCudaErrors(curandDestroyGenerator(gen));
          freeArray(rands);
     }
@@ -474,6 +478,7 @@ extern "C"
 //        float *dDenom = thrust::raw_pointer_cast(denom.data());
         uint *dNeighbors = thrust::raw_pointer_cast(neighbors.data());
         uint *dNumNeighbors = thrust::raw_pointer_cast(numNeighbors.data());
+        //float4 *dneighborsPosCache = thrust::raw_pointer_cast(neighborsPosCache.data());
         float *dRos = thrust::raw_pointer_cast(ros.data());
 
 //        printf("ros: %u, numParts: %u\n", (uint)ros.size(), numParticles);
@@ -488,6 +493,7 @@ extern "C"
                                                   dNumNeighbors,
                                                   (float4 *) particles,
                                                   dRos);
+                                                  //dneighborsPosCache);
 
         // execute the kernel
         // solveFluidsD<<< numBlocks, numThreads >>>(dLambda,

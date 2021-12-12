@@ -20,7 +20,7 @@
 #include "helper_math.h"
 #include "util.cuh"
 
-#define MAX_PARTICLES 150000 // (vbo size)
+#define MAX_PARTICLES 100000 // (vbo size)
 #define PARTICLE_RADIUS 0.25f
 #define GRID_SIZE make_uint3(64, 64, 64) // 3D
 
@@ -64,7 +64,7 @@ inline float frand()
 
 void ParticleApp::makeInitScene()
 {
-    unsigned int scale = 10;
+    unsigned int scale = 6;
 
     m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-2*scale, 0, -scale),
                                             make_int3(2*scale, 60, scale), 20);
@@ -144,7 +144,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
     bool resetVbo = true;
     float3 h, vec;
     float angle;
-    unsigned int scale = 10;
+    unsigned int scale = 6;
 
     // numbers 0-9 toggle different scenes
     switch (e->key())

@@ -20,7 +20,7 @@
 #define EPS 0.001f
 
 ////////////// fluid constants /////////////
-#define MAX_FLUID_NEIGHBORS 500
+#define MAX_FLUID_NEIGHBORS 250
 
 #define H 2.f       // kernel radius
 #define H2 4.f      // H^2
@@ -524,7 +524,8 @@ void collideCellRadius(int3    gridPos,
 
 //TODO NEXT: oldpos of neighbors is loaded 3 times, load once is enough, just make them 
 // to shared memory and reuse for the later 2 accesses.  
-
+#include "stdio.h"
+#define rad (4)
 __global__
 void findLambdasD(float  *lambda,               // input: sorted positions
                   uint   *gridParticleIndex,    // input: sorted particle indices
@@ -534,8 +535,10 @@ void findLambdasD(float  *lambda,               // input: sorted positions
                   uint   *neighbors,
                   uint   *numNeighbors,
                   float4 *particles,
-                  float  *ros)
+                  float  *ros) // float4 *neighborsPosCache)
 {
+    //__shared__ float4 neighborPosCache[];
+
     uint index = __mul24(blockIdx.x,blockDim.x) + threadIdx.x;
 
     if (index >= numParticles) return;
@@ -552,14 +555,19 @@ void findLambdasD(float  *lambda,               // input: sorted positions
 
     // examine neighbouring cells
     // TODO: make constant
-    int rad = (int)ceil(H / params.cellSize.x);
+    //int rad = (int)ceil(H / params.cellSize.x);
+    //printf("rad: %d\n",rad);
 
     // TODO: eliminate the access of this into just a single write, everything else is inrelavant here
     unsigned int numNeighborsLocal = 0;
+
+    // #pragma unroll
     for (int z=-rad; z<=rad; z++)
     {
+    //    #pragma unroll
         for (int y=-rad; y<=rad; y++)
         {
+    //        #pragma unroll
             for (int x=-rad; x<=rad; x++)
             {
                 int3 neighbourPos = gridPos + make_int3(x, y, z);
@@ -572,13 +580,15 @@ void findLambdasD(float  *lambda,               // input: sorted positions
                 {
                     // iterate over particles in this cell
                     uint endIndex = FETCH(cellEnd, gridHash);
-
+                    //printf("number of particles per grid: %d\n", endIndex - startIndex);
                     for (uint j=startIndex; j<endIndex; j++)
                     {
                         if (j != index)                // check not colliding with self
                         {
                             // TODO: pos2 can be saved into shared memory
-                            float3 pos2 = make_float3(FETCH(oldPos, j));
+
+                            float4 pos2_f4 = FETCH(oldPos, j);
+                            float3 pos2 = make_float3(pos2_f4);
 
                             float3 relPos = pos - pos2;
                             float dist2 = dot(relPos, relPos);
@@ -587,6 +597,7 @@ void findLambdasD(float  *lambda,               // input: sorted positions
                                 // neighbor stuff
                                 // TODO: coalse the wirte to this variable
                                 neighbors[index * MAX_FLUID_NEIGHBORS + numNeighborsLocal] = j;
+                                // neighborsPosCache[index * MAX_FLUID_NEIGHBORS + numNeighborsLocal] = pos2_f4;
                                 numNeighborsLocal += 1;
                             }
                         }
@@ -596,18 +607,17 @@ void findLambdasD(float  *lambda,               // input: sorted positions
             }
         }
     }
-    numNeighbors[index] = numNeighborsLocal;
-
+    // we do not need this because now kernels are fused
+    // numNeighbors[index] = numNeighborsLocal;
+    //printf("num neighbors: %d\n", numNeighborsLocal);
     float w = FETCH(invMass, index);
     float ro = 0.f;
     float denom = 0.f;
     float3 grad = make_float3(0.f);
-    // TODO: this read should be eliminated as well!
     for (uint i = 0; i < numNeighborsLocal; i++)
     {
         // TODO: this again is a global memory read that we do not need so far
-        uint ni = neighbors[index * MAX_FLUID_NEIGHBORS + i];
-        float3 pos2 =  make_float3(FETCH(oldPos, ni));
+        float3 pos2 =  make_float3(FETCH(oldPos, neighbors[index * MAX_FLUID_NEIGHBORS + i]));
 //      float w2 = FETCH(invMass, ni);
         float3 r = pos - pos2;
         float rlen2 = dot(r, r);
@@ -641,7 +651,7 @@ void findLambdasD(float  *lambda,               // input: sorted positions
     float4 delta = make_float4(0.f);
     for (uint i = 0; i < numNeighborsLocal; i++)
     {
-        float4 k2_pos2 =  FETCH(oldPos, neighbors[index * MAX_FLUID_NEIGHBORS + i]);
+        float4 k2_pos2 = FETCH(oldPos, neighbors[index * MAX_FLUID_NEIGHBORS + i]);
         float4 r = k2_pos - k2_pos2;
         float rlen2 = dot(r, r);
         float rlen = sqrt(rlen2);
