@@ -149,6 +149,7 @@ OTHER_FILES +=  src/cuda/wrappers.cuh \
     CUDA_LIBS -= $$NON_CUDA_LIBS
 
     # Here are some NVCC flags I've always used by default.
+    # TODO: add -lineinfo as a flag to see source code correlation when using ncu
     NVCCFLAGS     += --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v
 
     # Prepare the extra compiler configuration (taken from the nvidia forum)
