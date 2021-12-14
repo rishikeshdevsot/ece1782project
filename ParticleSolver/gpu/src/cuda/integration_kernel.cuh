@@ -53,6 +53,7 @@ texture<uint, 1, cudaReadModeElementType> cellEndTex;
 
 // simulation parameters in constant memory
 __constant__ SimParams params;
+SimParams h_params;
 
 struct collide_world_functor
 {
@@ -193,6 +194,15 @@ __device__ int3 calcGridPos(float3 p)
     return gridPos;
 }
 
+int3 calcGridPos_cpu(float3 p)
+{
+    int3 gridPos;
+    gridPos.x = floor((p.x - h_params.worldOrigin.x) / h_params.cellSize.x);
+    gridPos.y = floor((p.y - h_params.worldOrigin.y) / h_params.cellSize.y);
+    gridPos.z = floor((p.z - h_params.worldOrigin.z) / h_params.cellSize.z);
+    return gridPos;
+}
+
 // calculate address in grid from position (clamping to edges)
 __device__ uint calcGridHash(int3 gridPos)
 {
@@ -200,6 +210,14 @@ __device__ uint calcGridHash(int3 gridPos)
     gridPos.y = gridPos.y & (params.gridSize.y-1);
     gridPos.z = gridPos.z & (params.gridSize.z-1);
     return __umul24(__umul24(gridPos.z, params.gridSize.y), params.gridSize.x) + __umul24(gridPos.y, params.gridSize.x) + gridPos.x;
+}
+
+uint calcGridHash_cpu(int3 gridPos)
+{
+    gridPos.x = gridPos.x & (h_params.gridSize.x-1);  // wrap grid, assumes size is power of 2
+    gridPos.y = gridPos.y & (h_params.gridSize.y-1);
+    gridPos.z = gridPos.z & (h_params.gridSize.z-1);
+    return ((gridPos.z * h_params.gridSize.y) * h_params.gridSize.x) + (gridPos.y * h_params.gridSize.x) + gridPos.x;
 }
 
 // calculate grid hash value for each particle
@@ -517,6 +535,45 @@ void collideCellRadius(int3    gridPos,
 
 }
 
+void collideCellRadius_cpu(int3    gridPos,
+                         uint    index,
+                         float3  pos,
+                         uint   *cellStart,
+                         uint   *cellEnd,
+                         float   *oldPos,
+                         uint   *neighbors,
+                         uint   *numNeighbors)
+{
+    uint gridHash = calcGridHash_cpu(gridPos);
+
+    // get start of bucket for this cell
+    uint startIndex = cellStart[gridHash];
+
+    if (startIndex != 0xffffffff)          // cell is not empty
+    {
+        // iterate over particles in this cell
+        uint endIndex = cellEnd[gridHash];
+
+        for (uint j=startIndex; j<endIndex; j++)
+        {
+            if (j != index)                // check not colliding with self
+            {
+                float3 pos2 = make_float3(oldPos[j]);
+
+                float3 relPos = pos - pos2;
+                float dist2 = dot(relPos, relPos);
+                if (dist2 < H2 && numNeighbors[index] < MAX_FLUID_NEIGHBORS)
+                {
+                    // neighbor stuff
+                    neighbors[index * MAX_FLUID_NEIGHBORS + numNeighbors[index]] = j;
+                    numNeighbors[index] += 1;
+                }
+            }
+        }
+    }
+
+}
+
 
 __global__
 void findLambdasD(float  *lambda,               // input: sorted positions
@@ -590,6 +647,84 @@ void findLambdasD(float  *lambda,               // input: sorted positions
     denom += dot(grad, grad);
 
     lambda[index] = - ((ro / ros[gridParticleIndex[index]]) - 1) / (denom + FLUID_RELAXATION);
+}
+
+void findLambdasD_cpu(float  *lambda,               // input: sorted positions
+                  uint   *gridParticleIndex,    // input: sorted particle indices
+                  uint   *cellStart,
+                  uint   *cellEnd,
+                  float  *oldPos,
+                  float   *invMass,
+                  int   *oldPhase,
+                  uint    numParticles,
+                  uint   *neighbors,
+                  uint   *numNeighbors,
+                  float  *ros)
+{
+    for(uint index = 0; index < numParticles; index = index + 1){
+       // uint index = __mul24(blockIdx.x,blockDim.x) + threadIdx.x;
+
+        if (index >= numParticles) return;
+
+        int phase = oldPhase[index];
+        if (phase != FLUID) return;
+
+        // read particle data from sorted arrays
+        float3 pos = make_float3(oldPos[index]);
+
+        // get address in grid 
+        int3 gridPos = calcGridPos_cpu(pos);
+
+        // examine neighbouring cells
+
+        int rad = (int)ceil(H / h_params.cellSize.x);
+
+        numNeighbors[index] = 0;
+        for (int z=-rad; z<=rad; z++)
+        {
+            for (int y=-rad; y<=rad; y++)
+            {
+                for (int x=-rad; x<=rad; x++)
+                {
+                    int3 neighbourPos = gridPos + make_int3(x, y, z);
+                    collideCellRadius_cpu(neighbourPos, index, pos, cellStart, cellEnd, oldPos, neighbors, numNeighbors);
+                }
+            }
+        }
+
+        float w = invMass[index];
+        float ro = 0.f;
+        float denom = 0.f;
+        float3 grad = make_float3(0.f);
+        for (uint i = 0; i < numNeighbors[index]; i++)
+        {
+            uint ni = neighbors[index * MAX_FLUID_NEIGHBORS + i];
+            float3 pos2 =  make_float3(oldPos[ni]);
+    //        float w2 = FETCH(invMass, ni);
+            float3 r = pos - pos2;
+            float rlen2 = dot(r, r);
+            float rlen = sqrt(rlen2);
+            float hMinus2 = H2 - rlen2;
+            float hMinus = H - rlen;
+
+            // do fluid solid scaling hurr
+            ro += (POLY6_COEFF * hMinus2*hMinus2*hMinus2 ) / w;
+
+            float3 spikeyGrad;
+            if (rlen < 0.0001f)
+                spikeyGrad = make_float3(0.f); // randomize a little
+            else
+                spikeyGrad = (r / rlen) * -SPIKEY_COEFF * hMinus*hMinus;
+            spikeyGrad /= ros[gridParticleIndex[index]];
+
+            grad += -spikeyGrad;
+            denom += dot(spikeyGrad, spikeyGrad);
+        }
+        ro += (POLY6_COEFF * H6 ) / w;
+        denom += dot(grad, grad);
+
+        lambda[index] = - ((ro / ros[gridParticleIndex[index]]) - 1) / (denom + FLUID_RELAXATION);
+    }
 }
 
 

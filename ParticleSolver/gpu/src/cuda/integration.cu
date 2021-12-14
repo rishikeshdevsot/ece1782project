@@ -4,9 +4,10 @@
 
 #include <curand.h>
 #include <stdio.h>
-
+#include <memory.h>
 #include <thrust/device_ptr.h>
 #include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
 #include <thrust/for_each.h>
 #include <thrust/iterator/zip_iterator.h>
 #include <thrust/transform.h>
@@ -98,6 +99,13 @@ extern "C"
         // copy parameters to constant memory
         checkCudaErrors(cudaMemcpyToSymbol(params, hostParams, 1 * sizeof(SimParams)));
     }
+
+    void setHostParameters(SimParams *hostParams)
+    {
+        memcpy(&h_params, hostParams, 1 * sizeof(SimParams));
+    }
+
+
 
 
 
@@ -505,5 +513,112 @@ extern "C"
         checkCudaErrors(cudaUnbindTexture(oldPhaseTex));
         checkCudaErrors(cudaUnbindTexture(cellStartTex));
         checkCudaErrors(cudaUnbindTexture(cellEndTex));
+    }
+
+
+    void solveFluids_cpu(float *sortedPos,
+                     float *sortedW,
+                     int   *sortedPhase,
+                     uint  *gridParticleIndex,
+                     uint  *cellStart,
+                     uint  *cellEnd,
+                     float *particles,
+                     uint   numParticles,
+                     uint   numCells) 
+    {
+        // Copy mem to host mem
+        uint max_particles = 15000;
+        float * h_oldPos = (float *)malloc(numParticles*sizeof(float));
+        float * h_invMass = (float *)malloc(numParticles*sizeof(float));
+        int * h_oldPhase = (int *)malloc(numParticles*sizeof(int));
+        uint * h_cellStart = (uint *)malloc(numParticles*sizeof(uint));
+        uint * h_cellEnd = (uint *)malloc(numParticles*sizeof(uint));
+        uint * h_gridParticleIndex = (uint *)malloc(max_particles*sizeof(uint));
+
+        cudaMemcpy(h_oldPos, sortedPos, numParticles*sizeof(float), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_invMass, sortedW, numParticles*sizeof(float), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_oldPhase, sortedPhase, numParticles*sizeof(int), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_cellStart, cellStart, numParticles*sizeof(uint), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_cellEnd, cellEnd, numParticles*sizeof(uint), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_gridParticleIndex, gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyDeviceToHost);
+        
+
+
+        // Copy vectors to host mem
+        uint numThreads, numBlocks;
+        computeGridSize(numParticles, 256, numBlocks, numThreads);
+        thrust::host_vector<float> h_lambda;
+        thrust::host_vector<float> h_ros;
+        thrust::host_vector<uint> h_neighbors;
+        thrust::host_vector<uint> h_numNeighbors;
+        h_lambda = lambda;
+        h_ros = ros;
+        h_neighbors = neighbors;
+        h_numNeighbors = numNeighbors;
+
+        float *hLambda = thrust::raw_pointer_cast(h_lambda.data());
+//        float *dDenom = thrust::raw_pointer_cast(denom.data());
+        uint *hNeighbors = thrust::raw_pointer_cast(h_neighbors.data());
+        uint *hNumNeighbors = thrust::raw_pointer_cast(h_numNeighbors.data());
+        float *hRos = thrust::raw_pointer_cast(h_ros.data());
+
+        findLambdasD_cpu(hLambda,
+                        h_gridParticleIndex,
+                        h_cellStart,
+                        h_cellEnd,
+                        h_oldPos,
+                        h_invMass,
+                        h_oldPhase,
+                        numParticles,
+                        hNeighbors,
+                        hNumNeighbors,
+                        hRos);
+
+
+        // Copy vectors back to device mem
+        lambda = h_lambda;
+        ros = h_ros;
+        neighbors = h_neighbors;
+        numNeighbors = h_numNeighbors;
+
+        float *dLambda = thrust::raw_pointer_cast(lambda.data());
+//        float *dDenom = thrust::raw_pointer_cast(denom.data());
+        uint *dNeighbors = thrust::raw_pointer_cast(neighbors.data());
+        uint *dNumNeighbors = thrust::raw_pointer_cast(numNeighbors.data());
+        float *dRos = thrust::raw_pointer_cast(ros.data());
+
+        cudaMemcpy(sortedPos, h_oldPos, numParticles*sizeof(float4), cudaMemcpyHostToDevice);
+        cudaMemcpy(sortedW, h_invMass, numParticles*sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy(sortedPhase, h_oldPhase, numParticles*sizeof(float4), cudaMemcpyHostToDevice);
+        cudaMemcpy(cellStart, h_cellStart, numParticles*sizeof(uint), cudaMemcpyHostToDevice);
+        cudaMemcpy(cellEnd, h_cellEnd, numParticles*sizeof(uint), cudaMemcpyHostToDevice);
+        cudaMemcpy(gridParticleIndex, h_gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyHostToDevice);
+
+
+        checkCudaErrors(cudaBindTexture(0, oldPosTex, sortedPos, numParticles*sizeof(float4)));
+        checkCudaErrors(cudaBindTexture(0, invMassTex, sortedW, numParticles*sizeof(float)));
+        checkCudaErrors(cudaBindTexture(0, oldPhaseTex, sortedPhase, numParticles*sizeof(float4)));
+        checkCudaErrors(cudaBindTexture(0, cellStartTex, cellStart, numCells*sizeof(uint)));
+        checkCudaErrors(cudaBindTexture(0, cellEndTex, cellEnd, numCells*sizeof(uint)));
+
+        solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
+                                                  gridParticleIndex,
+                                                  (float4 *) particles,
+                                                  numParticles,
+                                                  dNeighbors,
+                                                  dNumNeighbors,
+                                                  dRos);
+
+        checkCudaErrors(cudaUnbindTexture(oldPosTex));
+        checkCudaErrors(cudaUnbindTexture(invMassTex));
+        checkCudaErrors(cudaUnbindTexture(oldPhaseTex));
+        checkCudaErrors(cudaUnbindTexture(cellStartTex));
+        checkCudaErrors(cudaUnbindTexture(cellEndTex));
+        free(h_oldPos);
+        free(h_invMass);
+        free(h_oldPhase); 
+        free(h_cellStart);
+        free(h_cellEnd);
+        free(h_gridParticleIndex);
     }
 }

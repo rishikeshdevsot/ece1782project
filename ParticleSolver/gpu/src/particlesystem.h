@@ -9,6 +9,8 @@
 typedef unsigned int GLuint;
 typedef unsigned int uint;
 
+enum implementation_type {cpu, gpu};
+
 const int numColors = 8;
 const float3 colors[numColors] = {  make_float3(.722f, .141f, .447f),
                                     make_float3(.886f, .455f, .173f),
@@ -59,6 +61,15 @@ private:
 
     GLuint createVBO(uint size);
     void setArray(bool isVboArray, const float *data, int start, int count);
+    // void solveFluids_cpu(float * m_dSortedPos,
+    //                     float * m_dSortedW,
+    //                     int * m_dSortedPhase,
+    //                     uint * m_dGridParticleIndex,
+    //                     uint * m_dCellStart,
+    //                     uint * m_dCellEnd,
+    //                     float * dPos,
+    //                     uint m_numParticles,
+    //                     uint m_numGridCells);
 
     void addParticle(float4 pos, float4 vel, float mass, float ro, int phase);
     void addParticleMultiple(float *pos, float *vel, float *mass, float *ro, int *phase, int numParticles);
