@@ -41,6 +41,9 @@ ParticleApp::ParticleApp()
                           m_particleSystem->getParticleRadius());
 
     makeInitScene();
+    m_renderer->createVAO(m_particleSystem->getCurrentReadBuffer(),
+                          m_particleSystem->getParticleRadius());
+
 
 }
 
@@ -69,7 +72,8 @@ void ParticleApp::makeInitScene()
 {
     unsigned int scale = 6;
     delete m_particleSystem;
-
+    m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
+                                            make_int3(scale, 4*scale, scale), 20);
     m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[rand() % numColors]);
     m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
 }
