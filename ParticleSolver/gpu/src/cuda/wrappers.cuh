@@ -107,9 +107,17 @@ extern "C"
                      uint   numParticles,
                      uint   numCells);
 
+    void solveFluids_justD(float *sortedPos,
+                           float *sortedW,
+                           int   *sortedPhase,
+                           uint  *gridParticleIndex,
+                           uint  *cellStart,
+                           uint  *cellEnd,
+                           float *particles,
+                           uint   numParticles,
+                           uint   numCells);
 
-
-    void solveFluidsOptimized(float *sortedPos,
+void solveFluidsOptimized(float *sortedPos,
                       float *sortedW,
                       int   *sortedPhase,
                       uint  *gridParticleIndex,

@@ -222,6 +222,16 @@ void ParticleSystem::update(float deltaTime)
                             dPos,
                             m_numParticles,
                             m_numGridCells);
+
+            solveFluids_justD(m_dSortedPos,
+                              m_dSortedW,
+                              m_dSortedPhase,
+                              m_dGridParticleIndex,
+                              m_dCellStart,
+                              m_dCellEnd,
+                              dPos,
+                              m_numParticles,
+                              m_numGridCells);
         }
         else if (m_fluidSolveMode == GPU_ORIG) {
             solveFluidsOrig(m_dSortedPos,

@@ -653,6 +653,54 @@ extern "C"
         free(h_cellEnd);
         free(h_gridParticleIndex);
     }
+    void solveFluids_justD(float *sortedPos,
+                           float *sortedW,
+                           int   *sortedPhase,
+                           uint  *gridParticleIndex,
+                           uint  *cellStart,
+                           uint  *cellEnd,
+                           float *particles,
+                           uint   numParticles,
+                           uint   numCells)
+    {
+        checkCudaErrors(cudaBindTexture(0, oldPosTex, sortedPos, numParticles*sizeof(float4)));
+        checkCudaErrors(cudaBindTexture(0, invMassTex, sortedW, numParticles*sizeof(float)));
+        checkCudaErrors(cudaBindTexture(0, oldPhaseTex, sortedPhase, numParticles*sizeof(float4)));
+        checkCudaErrors(cudaBindTexture(0, cellStartTex, cellStart, numCells*sizeof(uint)));
+        checkCudaErrors(cudaBindTexture(0, cellEndTex, cellEnd, numCells*sizeof(uint)));
+
+        // thread per particle
+        uint numThreads, numBlocks;
+        computeGridSize(numParticles, 256, numBlocks, numThreads);
+
+        float *dLambda = thrust::raw_pointer_cast(lambda.data());
+    //        float *dDenom = thrust::raw_pointer_cast(denom.data());
+        uint *dNeighbors = thrust::raw_pointer_cast(neighbors.data());
+        uint *dNumNeighbors = thrust::raw_pointer_cast(numNeighbors.data());
+        float *dRos = thrust::raw_pointer_cast(ros.data());
+
+    //        printf("ros: %u, numParts: %u\n", (uint)ros.size(), numParticles);
+
+        // execute the kernel
+
+        // execute the kernel
+        solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
+                                                  gridParticleIndex,
+                                                  (float4 *) particles,
+                                                  numParticles,
+                                                  dNeighbors,
+                                                  dNumNeighbors,
+                                                  dRos);
+
+        // check if kernel invocation generated an error
+        getLastCudaError("Kernel execution failed");
+
+        checkCudaErrors(cudaUnbindTexture(oldPosTex));
+        checkCudaErrors(cudaUnbindTexture(invMassTex));
+        checkCudaErrors(cudaUnbindTexture(oldPhaseTex));
+        checkCudaErrors(cudaUnbindTexture(cellStartTex));
+        checkCudaErrors(cudaUnbindTexture(cellEndTex));
+    }
 }
 
 
