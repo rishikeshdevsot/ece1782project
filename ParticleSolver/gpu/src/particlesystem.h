@@ -19,14 +19,23 @@ const float3 colors[numColors] = {  make_float3(.722f, .141f, .447f),
                                     make_float3(.020f, .533f, .431f),
                                     make_float3(.506f, .773f, .027f)};
 
+
+enum FluidSolveImpl {
+    CPU = 0,
+    GPU_ORIG,
+    GPU_OPTIMIZED
+};
+
+
 class ParticleSystem
 {
 public:
-    ParticleSystem(float particleRadius, uint3 gridSize, uint maxParticles, int3 minBounds, int3 maxBounds, int iterations);
+    ParticleSystem(float particleRadius, uint3 gridSize, uint maxParticles, int3 minBounds, int3 maxBounds, int iterations, FluidSolveImpl solveMode=GPU_OPTIMIZED);
     ~ParticleSystem();
 
     void update(float deltaTime);
     void resetGrid();
+    void setMode(FluidSolveImpl mode);
 
     void addFluid(int3 ll, int3 ur, float mass, float density, float3 color);
     void addParticleGrid(int3 ll, int3 ur, float mass, bool addJitter);
@@ -115,6 +124,9 @@ private:
     int3 m_maxBounds;
 
     uint m_solverIterations;
+
+    // which solver code path to take
+    FluidSolveImpl m_fluidSolveMode;
 };
 
 #endif // PARTICLESYSTEM_H

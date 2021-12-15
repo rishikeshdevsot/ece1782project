@@ -33,7 +33,7 @@
  * @param maxBounds
  * @param iterations
  */
-ParticleSystem::ParticleSystem(float particleRadius, uint3 gridSize, uint maxParticles, int3 minBounds, int3 maxBounds, int iterations)
+ParticleSystem::ParticleSystem(float particleRadius, uint3 gridSize, uint maxParticles, int3 minBounds, int3 maxBounds, int iterations, FluidSolveImpl fluidSolveMode)
     : m_initialized(false),
       m_particleRadius(particleRadius),
       m_maxParticles(maxParticles),
@@ -45,7 +45,8 @@ ParticleSystem::ParticleSystem(float particleRadius, uint3 gridSize, uint maxPar
       m_rigidIndex(0),
       m_minBounds(minBounds),
       m_maxBounds(maxBounds),
-      m_solverIterations(iterations)
+      m_solverIterations(iterations),
+      m_fluidSolveMode(fluidSolveMode)
 {
     m_numGridCells = m_gridSize.x * m_gridSize.y * m_gridSize.z;
 
@@ -66,6 +67,7 @@ ParticleSystem::ParticleSystem(float particleRadius, uint3 gridSize, uint maxPar
     m_params.globalDamping = 1.0f;
 
     _init(0, maxParticles);
+
 }
 
 
@@ -208,15 +210,32 @@ void ParticleSystem::update(float deltaTime)
 
         // find neighbors within a specified radius of fluids
         // and apply fluid constraints
-        solveFluids(m_dSortedPos,
-                    m_dSortedW,
-                    m_dSortedPhase,
-                    m_dGridParticleIndex,
-                    m_dCellStart,
-                    m_dCellEnd,
-                    dPos,
-                    m_numParticles,
-                    m_numGridCells);
+        if (m_fluidSolveMode == CPU) {
+            // solveFluidsCPU();
+        }
+        else if (m_fluidSolveMode == GPU_ORIG) {
+            solveFluidsOrig(m_dSortedPos,
+                        m_dSortedW,
+                        m_dSortedPhase,
+                        m_dGridParticleIndex,
+                        m_dCellStart,
+                        m_dCellEnd,
+                        dPos,
+                        m_numParticles,
+                        m_numGridCells);
+        }
+        else {
+            solveFluidsOptimized(m_dSortedPos,
+                            m_dSortedW,
+                            m_dSortedPhase,
+                            m_dGridParticleIndex,
+                            m_dCellStart,
+                            m_dCellEnd,
+                            dPos,
+                            m_numParticles,
+                            m_numGridCells);
+
+        }
 
         // apply collision constraints for the world borders
         collideWorld(dPos,

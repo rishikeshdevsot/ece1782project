@@ -144,7 +144,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
     bool resetVbo = true;
     float3 h, vec;
     float angle;
-    unsigned int scale = 6;
+    unsigned int scale = 8;
 
     // numbers 0-9 toggle different scenes
     switch (e->key())
@@ -159,24 +159,26 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-50, 0, -50), make_int3(50, 200, 50), 5);
         m_particleSystem->addHorizCloth(make_int2(0, -3), make_int2(6,3), make_float3(.5f,7.f,.5f), make_float2(.3f, .3f), 3.f, false);
         break;
-    case Qt::Key_3: // two fluids, different densities
+    case Qt::Key_3: // two fluids, different densities, original version
         delete m_particleSystem;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-2*scale, 0, -scale),
-                                              make_int3(2*scale, 60, scale), 20);
+                                              make_int3(2*scale, 60, scale), 20, GPU_ORIG);
         m_particleSystem->addFluid(make_int3(-2*scale, 0, -scale), make_int3(2*scale, 2*scale, scale), 1.f, 2.f, colors[rand() % numColors]);
         m_particleSystem->addFluid(make_int3(-2*scale, 2*scale, -scale), make_int3(2*scale, 4*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
 	break;
-    case Qt::Key_4: // one solid particle stack
+    case Qt::Key_4: // two fluids, different densities, optimized version
         delete m_particleSystem;
-        m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-50, 0, -50), make_int3(50, 200, 50), 5);
-        m_particleSystem->addParticleGrid(make_int3(-3, 0, -3), make_int3(3, 20, 3), 1.f, false);
+        m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-2*scale, 0, -scale),
+                                              make_int3(2*scale, 60, scale), 20, GPU_OPTIMIZED);
+        m_particleSystem->addFluid(make_int3(-2*scale, 0, -scale), make_int3(2*scale, 2*scale, scale), 1.f, 2.f, colors[rand() % numColors]);
+        m_particleSystem->addFluid(make_int3(-2*scale, 2*scale, -scale), make_int3(2*scale, 4*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
         break;
-    case Qt::Key_5: // three solid particle stacks
+    case Qt::Key_5: // two fluids, different densities, CPU version
         delete m_particleSystem;
-        m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-50, 0, -50), make_int3(50, 200, 50), 5);
-        m_particleSystem->addParticleGrid(make_int3(-10, 0, -3), make_int3(-7, 10, 3), 1.f, false);
-        m_particleSystem->addParticleGrid(make_int3(-3, 0, -3), make_int3(3, 10, 3), 1.f, false);
-        m_particleSystem->addParticleGrid(make_int3(7, 0, -3), make_int3(10, 10, 3), 1.f, false);
+        m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-2*scale, 0, -scale),
+                                              make_int3(2*scale, 60, scale), 20, CPU);
+        m_particleSystem->addFluid(make_int3(-2*scale, 0, -scale), make_int3(2*scale, 2*scale, scale), 1.f, 2.f, colors[rand() % numColors]);
+        m_particleSystem->addFluid(make_int3(-2*scale, 2*scale, -scale), make_int3(2*scale, 4*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
         break;
     case Qt::Key_6: // particles on cloth
         delete m_particleSystem;

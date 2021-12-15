@@ -85,7 +85,7 @@ extern "C"
     void solveDistanceConstraints(float *particles);
 
     ////////////////////////////////// FLUIDS ////////////////////////
-    void solveFluids(float *sortedPos,
+    void solveFluidsOrig(float *sortedPos,
                      float *sortedW,
                      int   *sortedPhase,
                      uint  *gridParticleIndex,
@@ -94,6 +94,16 @@ extern "C"
                      float *particles,
                      uint   numParticles,
                      uint   numCells);
-}
 
+
+    void solveFluidsOptimized(float *sortedPos,
+                      float *sortedW,
+                      int   *sortedPhase,
+                      uint  *gridParticleIndex,
+                      uint  *cellStart,
+                      uint  *cellEnd,
+                      float *particles,
+                      uint   numParticles,
+                      uint   numCells);
+}
 #endif // WRAPPERS_CUH
