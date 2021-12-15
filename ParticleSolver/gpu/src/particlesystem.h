@@ -30,7 +30,7 @@ enum FluidSolveImpl {
 class ParticleSystem
 {
 public:
-    ParticleSystem(float particleRadius, uint3 gridSize, uint maxParticles, int3 minBounds, int3 maxBounds, int iterations, FluidSolveImpl solveMode=GPU_OPTIMIZED);
+    ParticleSystem(float particleRadius, uint3 gridSize, uint maxParticles, int3 minBounds, int3 maxBounds, int iterations, FluidSolveImpl solveMode=GPU_ORIG);
     ~ParticleSystem();
 
     void update(float deltaTime);

@@ -74,8 +74,9 @@ void ParticleApp::makeInitScene()
     delete m_particleSystem;
     m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
                                             make_int3(scale, 4*scale, scale), 20);
-    m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[rand() % numColors]);
-    m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
+    int randnum = rand() % numColors;
+    m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
+    m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
 }
 
 
@@ -151,7 +152,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
     float3 h, vec;
     float angle;
     unsigned int scale = 10;
-
+    int randnum = 0;
     // numbers 0-9 toggle different scenes
     switch (e->key())
     {
@@ -167,24 +168,27 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         break;
     case Qt::Key_3: // two fluids, different densities, original version
         delete m_particleSystem;
+        randnum = rand() % numColors;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
                                               make_int3(scale, 8*scale, scale), 20, GPU_ORIG);
-        m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[rand() % numColors]);
-        m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
+        m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
+        m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
 	break;
     case Qt::Key_4: // two fluids, different densities, optimized version
         delete m_particleSystem;
+        randnum = rand() % numColors;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
                                               make_int3(scale, 8*scale, scale), 20, GPU_OPTIMIZED);
-        m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[rand() % numColors]);
-        m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
+        m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
+        m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
         break;
     case Qt::Key_5: // two fluids, different densities, CPU version
         delete m_particleSystem;
+        randnum = rand() % numColors;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
                                               make_int3(scale, 8*scale, scale), 20, CPU);
-        m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[rand() % numColors]);
-        m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[rand() % numColors]);
+        m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
+        m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
         break;
     case Qt::Key_6: // particles on cloth
         delete m_particleSystem;
