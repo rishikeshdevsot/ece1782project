@@ -170,7 +170,7 @@ void ParticleSystem::update(float deltaTime)
                     deltaTime,
                     m_numParticles);
     
-    implementation_type impl_type = gpu;
+    implementation_type impl_type = cpu;
 
     for (uint i = 0; i < m_solverIterations; i++)
     {
@@ -212,6 +212,15 @@ void ParticleSystem::update(float deltaTime)
 
         if (impl_type == cpu) {
             solveFluids_cpu(m_dSortedPos,
+                        m_dSortedW,
+                        m_dSortedPhase,
+                        m_dGridParticleIndex,
+                        m_dCellStart,
+                        m_dCellEnd,
+                        dPos,
+                        m_numParticles,
+                        m_numGridCells);
+            solveFluids_justD(m_dSortedPos,
                         m_dSortedW,
                         m_dSortedPhase,
                         m_dGridParticleIndex,

@@ -65,7 +65,9 @@ inline float frand()
 
 void ParticleApp::makeInitScene()
 {
-    m_particleSystem->addRope(make_float3(0, 20, 0), make_float3(0, -.5, 0), .4f, 32, 1.f, true);
+    m_particleSystem->addFluid(make_int3(-7, 0, -5), make_int3(7, 5, 5), 1.f, 2.f, colors[rand() % numColors]);
+    m_particleSystem->addFluid(make_int3(-7, 5, -5), make_int3(7, 10, 5), 1.f, 3.f, colors[rand() % numColors]);
+    //m_particleSystem->addRope(make_float3(0, 20, 0), make_float3(0, -.5, 0), .4f, 32, 1.f, true);
 }
 
 

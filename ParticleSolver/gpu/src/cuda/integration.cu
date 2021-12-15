@@ -515,6 +515,55 @@ extern "C"
         checkCudaErrors(cudaUnbindTexture(cellEndTex));
     }
 
+    void solveFluids_justD(float *sortedPos,
+                     float *sortedW,
+                     int   *sortedPhase,
+                     uint  *gridParticleIndex,
+                     uint  *cellStart,
+                     uint  *cellEnd,
+                     float *particles,
+                     uint   numParticles,
+                     uint   numCells)
+    {
+        checkCudaErrors(cudaBindTexture(0, oldPosTex, sortedPos, numParticles*sizeof(float4)));
+        checkCudaErrors(cudaBindTexture(0, invMassTex, sortedW, numParticles*sizeof(float)));
+        checkCudaErrors(cudaBindTexture(0, oldPhaseTex, sortedPhase, numParticles*sizeof(float4)));
+        checkCudaErrors(cudaBindTexture(0, cellStartTex, cellStart, numCells*sizeof(uint)));
+        checkCudaErrors(cudaBindTexture(0, cellEndTex, cellEnd, numCells*sizeof(uint)));
+
+        // thread per particle
+        uint numThreads, numBlocks;
+        computeGridSize(numParticles, 256, numBlocks, numThreads);
+
+        float *dLambda = thrust::raw_pointer_cast(lambda.data());
+//        float *dDenom = thrust::raw_pointer_cast(denom.data());
+        uint *dNeighbors = thrust::raw_pointer_cast(neighbors.data());
+        uint *dNumNeighbors = thrust::raw_pointer_cast(numNeighbors.data());
+        float *dRos = thrust::raw_pointer_cast(ros.data());
+
+//        printf("ros: %u, numParts: %u\n", (uint)ros.size(), numParticles);
+
+        // execute the kernel
+
+        // execute the kernel
+        solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
+                                                  gridParticleIndex,
+                                                  (float4 *) particles,
+                                                  numParticles,
+                                                  dNeighbors,
+                                                  dNumNeighbors,
+                                                  dRos);
+
+        // check if kernel invocation generated an error
+        getLastCudaError("Kernel execution failed");
+
+        checkCudaErrors(cudaUnbindTexture(oldPosTex));
+        checkCudaErrors(cudaUnbindTexture(invMassTex));
+        checkCudaErrors(cudaUnbindTexture(oldPhaseTex));
+        checkCudaErrors(cudaUnbindTexture(cellStartTex));
+        checkCudaErrors(cudaUnbindTexture(cellEndTex));
+    }
+
 
     void solveFluids_cpu(float *sortedPos,
                      float *sortedW,
@@ -531,15 +580,15 @@ extern "C"
         float * h_oldPos = (float *)malloc(numParticles*sizeof(float));
         float * h_invMass = (float *)malloc(numParticles*sizeof(float));
         int * h_oldPhase = (int *)malloc(numParticles*sizeof(int));
-        uint * h_cellStart = (uint *)malloc(numParticles*sizeof(uint));
-        uint * h_cellEnd = (uint *)malloc(numParticles*sizeof(uint));
+        uint * h_cellStart = (uint *)malloc(numCells*sizeof(uint));
+        uint * h_cellEnd = (uint *)malloc(numCells*sizeof(uint));
         uint * h_gridParticleIndex = (uint *)malloc(max_particles*sizeof(uint));
 
         cudaMemcpy(h_oldPos, sortedPos, numParticles*sizeof(float), cudaMemcpyDeviceToHost);
         cudaMemcpy(h_invMass, sortedW, numParticles*sizeof(float), cudaMemcpyDeviceToHost);
         cudaMemcpy(h_oldPhase, sortedPhase, numParticles*sizeof(int), cudaMemcpyDeviceToHost);
-        cudaMemcpy(h_cellStart, cellStart, numParticles*sizeof(uint), cudaMemcpyDeviceToHost);
-        cudaMemcpy(h_cellEnd, cellEnd, numParticles*sizeof(uint), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_cellStart, cellStart, numCells*sizeof(uint), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_cellEnd, cellEnd, numCells*sizeof(uint), cudaMemcpyDeviceToHost);
         cudaMemcpy(h_gridParticleIndex, gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyDeviceToHost);
         
 
@@ -587,13 +636,22 @@ extern "C"
         uint *dNumNeighbors = thrust::raw_pointer_cast(numNeighbors.data());
         float *dRos = thrust::raw_pointer_cast(ros.data());
 
-        cudaMemcpy(sortedPos, h_oldPos, numParticles*sizeof(float4), cudaMemcpyHostToDevice);
+        cudaMemcpy(sortedPos, h_oldPos, numParticles*sizeof(float), cudaMemcpyHostToDevice);
         cudaMemcpy(sortedW, h_invMass, numParticles*sizeof(float), cudaMemcpyHostToDevice);
-        cudaMemcpy(sortedPhase, h_oldPhase, numParticles*sizeof(float4), cudaMemcpyHostToDevice);
-        cudaMemcpy(cellStart, h_cellStart, numParticles*sizeof(uint), cudaMemcpyHostToDevice);
-        cudaMemcpy(cellEnd, h_cellEnd, numParticles*sizeof(uint), cudaMemcpyHostToDevice);
+        cudaMemcpy(sortedPhase, h_oldPhase, numParticles*sizeof(int), cudaMemcpyHostToDevice);
+        cudaMemcpy(cellStart, h_cellStart, numCells*sizeof(uint), cudaMemcpyHostToDevice);
+        cudaMemcpy(cellEnd, h_cellEnd, numCells*sizeof(uint), cudaMemcpyHostToDevice);
         cudaMemcpy(gridParticleIndex, h_gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyHostToDevice);
 
+        cudaDeviceSynchronize();
+
+        free(h_oldPos);
+        free(h_invMass);
+        free(h_oldPhase); 
+        free(h_cellStart);
+        free(h_cellEnd);
+        free(h_gridParticleIndex);
+        /*
 
         checkCudaErrors(cudaBindTexture(0, oldPosTex, sortedPos, numParticles*sizeof(float4)));
         checkCudaErrors(cudaBindTexture(0, invMassTex, sortedW, numParticles*sizeof(float)));
@@ -609,16 +667,13 @@ extern "C"
                                                   dNumNeighbors,
                                                   dRos);
 
+        getLastCudaError("Kernel execution failed");
+
         checkCudaErrors(cudaUnbindTexture(oldPosTex));
         checkCudaErrors(cudaUnbindTexture(invMassTex));
         checkCudaErrors(cudaUnbindTexture(oldPhaseTex));
         checkCudaErrors(cudaUnbindTexture(cellStartTex));
         checkCudaErrors(cudaUnbindTexture(cellEndTex));
-        free(h_oldPos);
-        free(h_invMass);
-        free(h_oldPhase); 
-        free(h_cellStart);
-        free(h_cellEnd);
-        free(h_gridParticleIndex);
+        */
     }
 }
