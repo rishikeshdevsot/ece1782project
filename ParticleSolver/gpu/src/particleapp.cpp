@@ -185,6 +185,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         break;
     case Qt::Key_5: // two fluids, different densities, CPU version
         delete m_particleSystem;
+        scale = 4;
         randnum = rand() % numColors;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
                                               make_int3(scale, 8*scale, scale), 20, CPU);
