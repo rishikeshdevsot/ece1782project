@@ -540,7 +540,7 @@ void collideCellRadius_cpu(int3    gridPos,
                          float3  pos,
                          uint   *cellStart,
                          uint   *cellEnd,
-                         float   *oldPos,
+                         float4   *oldPos,
                          uint   *neighbors,
                          uint   *numNeighbors)
 {
@@ -653,7 +653,7 @@ void findLambdasD_cpu(float  *lambda,               // input: sorted positions
                   uint   *gridParticleIndex,    // input: sorted particle indices
                   uint   *cellStart,
                   uint   *cellEnd,
-                  float  *oldPos,
+                  float4  *oldPos,
                   float   *invMass,
                   int   *oldPhase,
                   uint    numParticles,

@@ -577,21 +577,21 @@ extern "C"
     {
         // Copy mem to host mem
         uint max_particles = 15000;
-        float * h_oldPos = (float *)malloc(numParticles*sizeof(float));
+        float4 * h_oldPos = (float4 *)malloc(numParticles*sizeof(float4));
         float * h_invMass = (float *)malloc(numParticles*sizeof(float));
         int * h_oldPhase = (int *)malloc(numParticles*sizeof(int));
         uint * h_cellStart = (uint *)malloc(numCells*sizeof(uint));
         uint * h_cellEnd = (uint *)malloc(numCells*sizeof(uint));
         uint * h_gridParticleIndex = (uint *)malloc(max_particles*sizeof(uint));
 
-        cudaMemcpy(h_oldPos, sortedPos, numParticles*sizeof(float), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_oldPos, sortedPos, numParticles*sizeof(float4), cudaMemcpyDeviceToHost);
         cudaMemcpy(h_invMass, sortedW, numParticles*sizeof(float), cudaMemcpyDeviceToHost);
         cudaMemcpy(h_oldPhase, sortedPhase, numParticles*sizeof(int), cudaMemcpyDeviceToHost);
         cudaMemcpy(h_cellStart, cellStart, numCells*sizeof(uint), cudaMemcpyDeviceToHost);
         cudaMemcpy(h_cellEnd, cellEnd, numCells*sizeof(uint), cudaMemcpyDeviceToHost);
         cudaMemcpy(h_gridParticleIndex, gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyDeviceToHost);
         
-
+        cudaDeviceSynchronize();
 
         // Copy vectors to host mem
         uint numThreads, numBlocks;
@@ -630,18 +630,12 @@ extern "C"
         neighbors = h_neighbors;
         numNeighbors = h_numNeighbors;
 
-        float *dLambda = thrust::raw_pointer_cast(lambda.data());
-//        float *dDenom = thrust::raw_pointer_cast(denom.data());
-        uint *dNeighbors = thrust::raw_pointer_cast(neighbors.data());
-        uint *dNumNeighbors = thrust::raw_pointer_cast(numNeighbors.data());
-        float *dRos = thrust::raw_pointer_cast(ros.data());
-
-        cudaMemcpy(sortedPos, h_oldPos, numParticles*sizeof(float), cudaMemcpyHostToDevice);
-        cudaMemcpy(sortedW, h_invMass, numParticles*sizeof(float), cudaMemcpyHostToDevice);
-        cudaMemcpy(sortedPhase, h_oldPhase, numParticles*sizeof(int), cudaMemcpyHostToDevice);
-        cudaMemcpy(cellStart, h_cellStart, numCells*sizeof(uint), cudaMemcpyHostToDevice);
-        cudaMemcpy(cellEnd, h_cellEnd, numCells*sizeof(uint), cudaMemcpyHostToDevice);
-        cudaMemcpy(gridParticleIndex, h_gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyHostToDevice);
+        //cudaMemcpy(sortedPos, h_oldPos, numParticles*sizeof(float4), cudaMemcpyHostToDevice);
+        //cudaMemcpy(sortedW, h_invMass, numParticles*sizeof(float), cudaMemcpyHostToDevice);
+        //cudaMemcpy(sortedPhase, h_oldPhase, numParticles*sizeof(int), cudaMemcpyHostToDevice);
+        //cudaMemcpy(cellStart, h_cellStart, numCells*sizeof(uint), cudaMemcpyHostToDevice);
+        //cudaMemcpy(cellEnd, h_cellEnd, numCells*sizeof(uint), cudaMemcpyHostToDevice);
+        //cudaMemcpy(gridParticleIndex, h_gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyHostToDevice);
 
         cudaDeviceSynchronize();
 
@@ -651,29 +645,5 @@ extern "C"
         free(h_cellStart);
         free(h_cellEnd);
         free(h_gridParticleIndex);
-        /*
-
-        checkCudaErrors(cudaBindTexture(0, oldPosTex, sortedPos, numParticles*sizeof(float4)));
-        checkCudaErrors(cudaBindTexture(0, invMassTex, sortedW, numParticles*sizeof(float)));
-        checkCudaErrors(cudaBindTexture(0, oldPhaseTex, sortedPhase, numParticles*sizeof(float4)));
-        checkCudaErrors(cudaBindTexture(0, cellStartTex, cellStart, numCells*sizeof(uint)));
-        checkCudaErrors(cudaBindTexture(0, cellEndTex, cellEnd, numCells*sizeof(uint)));
-
-        solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
-                                                  gridParticleIndex,
-                                                  (float4 *) particles,
-                                                  numParticles,
-                                                  dNeighbors,
-                                                  dNumNeighbors,
-                                                  dRos);
-
-        getLastCudaError("Kernel execution failed");
-
-        checkCudaErrors(cudaUnbindTexture(oldPosTex));
-        checkCudaErrors(cudaUnbindTexture(invMassTex));
-        checkCudaErrors(cudaUnbindTexture(oldPhaseTex));
-        checkCudaErrors(cudaUnbindTexture(cellStartTex));
-        checkCudaErrors(cudaUnbindTexture(cellEndTex));
-        */
     }
 }
