@@ -8,7 +8,7 @@
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 
-
+#include <memory.h>
 #include <cublas_v2.h>
 #include <cusparse.h>
 #ifdef SOLVER
@@ -320,6 +320,11 @@ extern "C"
     {
         // copy parameters to constant memory
         checkCudaErrors(cudaMemcpyToSymbol(params, hostParams, sizeof(SimParams)));
+    }
+
+    void setHostParameters(SimParams *hostParams)
+    {
+        memcpy(&h_params, hostParams, 1 * sizeof(SimParams));
     }
 
     //Round a / b to nearest higher integer value

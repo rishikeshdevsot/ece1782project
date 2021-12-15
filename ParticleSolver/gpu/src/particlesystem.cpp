@@ -109,6 +109,7 @@ void ParticleSystem::_init(uint numParticles, uint maxParticles)
     allocateArray((void **)&m_dCellEnd, m_numGridCells*sizeof(uint));
 
     setParameters(&m_params);
+    setHostParameters(&m_params);
 
     m_initialized = true;
 }
@@ -163,6 +164,7 @@ void ParticleSystem::update(float deltaTime)
 
     // update constants
     setParameters(&m_params);
+    setHostParameters(&m_params);
 
     // store current positions then guess
     // new positions based on forces
@@ -211,7 +213,25 @@ void ParticleSystem::update(float deltaTime)
         // find neighbors within a specified radius of fluids
         // and apply fluid constraints
         if (m_fluidSolveMode == CPU) {
-            // solveFluidsCPU();
+            solveFluids_cpu(m_dSortedPos,
+                            m_dSortedW,
+                            m_dSortedPhase,
+                            m_dGridParticleIndex,
+                            m_dCellStart,
+                            m_dCellEnd,
+                            dPos,
+                            m_numParticles,
+                            m_numGridCells);
+
+            solveFluids_justD(m_dSortedPos,
+                              m_dSortedW,
+                              m_dSortedPhase,
+                              m_dGridParticleIndex,
+                              m_dCellStart,
+                              m_dCellEnd,
+                              dPos,
+                              m_numParticles,
+                              m_numGridCells);
         }
         else if (m_fluidSolveMode == GPU_ORIG) {
             solveFluidsOrig(m_dSortedPos,
@@ -264,6 +284,54 @@ void ParticleSystem::update(float deltaTime)
     addNewStuff();
 }
 
+// void ParticleSystem::solveFluids_cpu(float * m_dSortedPos, float * m_dSortedW, int * m_dSortedPhase, uint * m_dGridParticleIndex,
+// uint * m_dCellStart, uint * m_dCellEnd, float * dPos, uint m_numParticles, uint m_numGridCells) {
+//         checkCudaErrors(cudaBindTexture(0, oldPosTex, sortedPos, numParticles*sizeof(float4)));
+//         checkCudaErrors(cudaBindTexture(0, invMassTex, sortedW, numParticles*sizeof(float)));
+//         checkCudaErrors(cudaBindTexture(0, oldPhaseTex, sortedPhase, numParticles*sizeof(float4)));
+//         checkCudaErrors(cudaBindTexture(0, cellStartTex, cellStart, numCells*sizeof(uint)));
+//         checkCudaErrors(cudaBindTexture(0, cellEndTex, cellEnd, numCells*sizeof(uint)));
+
+//         // thread per particle
+//         uint numThreads, numBlocks;
+//         computeGridSize(numParticles, 256, numBlocks, numThreads);
+
+//         float *dLambda = thrust::raw_pointer_cast(lambda.data());
+// //        float *dDenom = thrust::raw_pointer_cast(denom.data());
+//         uint *dNeighbors = thrust::raw_pointer_cast(neighbors.data());
+//         uint *dNumNeighbors = thrust::raw_pointer_cast(numNeighbors.data());
+//         float *dRos = thrust::raw_pointer_cast(ros.data());
+
+// //        printf("ros: %u, numParts: %u\n", (uint)ros.size(), numParticles);
+
+//         // execute the kernel
+//         findLambdasD<<< numBlocks, numThreads >>>(dLambda,
+//                                                   gridParticleIndex,
+//                                                   cellStart,
+//                                                   cellEnd,
+//                                                   numParticles,
+//                                                   dNeighbors,
+//                                                   dNumNeighbors,
+//                                                   dRos);
+
+//         // execute the kernel
+//         solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
+//                                                   gridParticleIndex,
+//                                                   (float4 *) particles,
+//                                                   numParticles,
+//                                                   dNeighbors,
+//                                                   dNumNeighbors,
+//                                                   dRos);
+
+//         // check if kernel invocation generated an error
+//         getLastCudaError("Kernel execution failed");
+
+//         checkCudaErrors(cudaUnbindTexture(oldPosTex));
+//         checkCudaErrors(cudaUnbindTexture(invMassTex));
+//         checkCudaErrors(cudaUnbindTexture(oldPhaseTex));
+//         checkCudaErrors(cudaUnbindTexture(cellStartTex));
+//         checkCudaErrors(cudaUnbindTexture(cellEndTex));
+// }
 
 void ParticleSystem::addNewStuff()
 {
