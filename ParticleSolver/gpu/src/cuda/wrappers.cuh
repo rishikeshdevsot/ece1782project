@@ -22,6 +22,7 @@ extern "C"
     void freeIntegrationVectors();
 
     void setParameters(SimParams *hostParams);
+    void setHostParameters(SimParams *hostParams);
 
     void integrateSystem(float *pos,
                          float deltaTime,
@@ -94,6 +95,18 @@ extern "C"
                      float *particles,
                      uint   numParticles,
                      uint   numCells);
+
+
+    void solveFluids_cpu(float *sortedPos,
+                     float *sortedW,
+                     int   *sortedPhase,
+                     uint  *gridParticleIndex,
+                     uint  *cellStart,
+                     uint  *cellEnd,
+                     float *particles,
+                     uint   numParticles,
+                     uint   numCells);
+
 
 
     void solveFluidsOptimized(float *sortedPos,

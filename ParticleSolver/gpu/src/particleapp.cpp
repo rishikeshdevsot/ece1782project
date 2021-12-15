@@ -77,6 +77,7 @@ void ParticleApp::makeInitScene()
     int randnum = rand() % numColors;
     m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
     m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
+
 }
 
 

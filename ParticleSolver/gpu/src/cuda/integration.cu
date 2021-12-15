@@ -4,9 +4,10 @@
 
 #include <curand.h>
 #include <stdio.h>
-
+#include <memory.h>
 #include <thrust/device_ptr.h>
 #include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
 #include <thrust/for_each.h>
 #include <thrust/iterator/zip_iterator.h>
 #include <thrust/transform.h>
@@ -102,6 +103,13 @@ extern "C"
         // copy parameters to constant memory
         checkCudaErrors(cudaMemcpyToSymbol(params, hostParams, 1 * sizeof(SimParams)));
     }
+
+    void setHostParameters(SimParams *hostParams)
+    {
+        memcpy(&h_params, hostParams, 1 * sizeof(SimParams));
+    }
+
+
 
 
 
@@ -562,6 +570,89 @@ extern "C"
         checkCudaErrors(cudaUnbindTexture(cellEndTex));
     }
 
+
+
+    void solveFluids_cpu(float *sortedPos,
+                     float *sortedW,
+                     int   *sortedPhase,
+                     uint  *gridParticleIndex,
+                     uint  *cellStart,
+                     uint  *cellEnd,
+                     float *particles,
+                     uint   numParticles,
+                     uint   numCells) 
+    {
+        // Copy mem to host mem
+        uint max_particles = 15000;
+        float4 * h_oldPos = (float4 *)malloc(numParticles*sizeof(float4));
+        float * h_invMass = (float *)malloc(numParticles*sizeof(float));
+        int * h_oldPhase = (int *)malloc(numParticles*sizeof(int));
+        uint * h_cellStart = (uint *)malloc(numCells*sizeof(uint));
+        uint * h_cellEnd = (uint *)malloc(numCells*sizeof(uint));
+        uint * h_gridParticleIndex = (uint *)malloc(max_particles*sizeof(uint));
+
+        cudaMemcpy(h_oldPos, sortedPos, numParticles*sizeof(float4), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_invMass, sortedW, numParticles*sizeof(float), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_oldPhase, sortedPhase, numParticles*sizeof(int), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_cellStart, cellStart, numCells*sizeof(uint), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_cellEnd, cellEnd, numCells*sizeof(uint), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_gridParticleIndex, gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyDeviceToHost);
+        
+        cudaDeviceSynchronize();
+
+        // Copy vectors to host mem
+        uint numThreads, numBlocks;
+        computeGridSize(numParticles, 256, numBlocks, numThreads);
+        thrust::host_vector<float> h_lambda;
+        thrust::host_vector<float> h_ros;
+        thrust::host_vector<uint> h_neighbors;
+        thrust::host_vector<uint> h_numNeighbors;
+        h_lambda = lambda;
+        h_ros = ros;
+        h_neighbors = neighbors;
+        h_numNeighbors = numNeighbors;
+
+        float *hLambda = thrust::raw_pointer_cast(h_lambda.data());
+//        float *dDenom = thrust::raw_pointer_cast(denom.data());
+        uint *hNeighbors = thrust::raw_pointer_cast(h_neighbors.data());
+        uint *hNumNeighbors = thrust::raw_pointer_cast(h_numNeighbors.data());
+        float *hRos = thrust::raw_pointer_cast(h_ros.data());
+
+        findLambdasD_cpu(hLambda,
+                        h_gridParticleIndex,
+                        h_cellStart,
+                        h_cellEnd,
+                        h_oldPos,
+                        h_invMass,
+                        h_oldPhase,
+                        numParticles,
+                        hNeighbors,
+                        hNumNeighbors,
+                        hRos);
+
+
+        // Copy vectors back to device mem
+        lambda = h_lambda;
+        ros = h_ros;
+        neighbors = h_neighbors;
+        numNeighbors = h_numNeighbors;
+
+        //cudaMemcpy(sortedPos, h_oldPos, numParticles*sizeof(float4), cudaMemcpyHostToDevice);
+        //cudaMemcpy(sortedW, h_invMass, numParticles*sizeof(float), cudaMemcpyHostToDevice);
+        //cudaMemcpy(sortedPhase, h_oldPhase, numParticles*sizeof(int), cudaMemcpyHostToDevice);
+        //cudaMemcpy(cellStart, h_cellStart, numCells*sizeof(uint), cudaMemcpyHostToDevice);
+        //cudaMemcpy(cellEnd, h_cellEnd, numCells*sizeof(uint), cudaMemcpyHostToDevice);
+        //cudaMemcpy(gridParticleIndex, h_gridParticleIndex, max_particles*sizeof(uint), cudaMemcpyHostToDevice);
+
+        cudaDeviceSynchronize();
+
+        free(h_oldPos);
+        free(h_invMass);
+        free(h_oldPhase); 
+        free(h_cellStart);
+        free(h_cellEnd);
+        free(h_gridParticleIndex);
+    }
 }
 
 
