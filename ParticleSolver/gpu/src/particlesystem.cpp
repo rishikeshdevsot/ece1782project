@@ -244,6 +244,17 @@ void ParticleSystem::update(float deltaTime)
                         m_numParticles,
                         m_numGridCells);
         }
+        else if (m_fluidSolveMode == GPU_OPTIMIZED_TWO_KERNELS) {
+              solveFluidsOptimizedTwoKernels(m_dSortedPos,
+                            m_dSortedW,
+                            m_dSortedPhase,
+                            m_dGridParticleIndex,
+                            m_dCellStart,
+                            m_dCellEnd,
+                            dPos,
+                            m_numParticles,
+                            m_numGridCells);          
+        }
         else {
             solveFluidsOptimized(m_dSortedPos,
                             m_dSortedW,

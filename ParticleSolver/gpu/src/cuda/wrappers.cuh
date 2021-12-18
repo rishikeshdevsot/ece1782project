@@ -126,5 +126,15 @@ void solveFluidsOptimized(float *sortedPos,
                       float *particles,
                       uint   numParticles,
                       uint   numCells);
+
+void solveFluidsOptimizedTwoKernels(float *sortedPos,
+                      float *sortedW,
+                      int   *sortedPhase,
+                      uint  *gridParticleIndex,
+                      uint  *cellStart,
+                      uint  *cellEnd,
+                      float *particles,
+                      uint   numParticles,
+                      uint   numCells);
 }
 #endif // WRAPPERS_CUH

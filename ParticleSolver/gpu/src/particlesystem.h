@@ -23,7 +23,8 @@ const float3 colors[numColors] = {  make_float3(.722f, .141f, .447f),
 enum FluidSolveImpl {
     CPU = 0,
     GPU_ORIG,
-    GPU_OPTIMIZED
+    GPU_OPTIMIZED,
+    GPU_OPTIMIZED_TWO_KERNELS
 };
 
 

@@ -194,9 +194,11 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         break;
     case Qt::Key_6: // particles on cloth
         delete m_particleSystem;
-        m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-50, 0, -50), make_int3(50, 200, 50), 5);
-        m_particleSystem->addHorizCloth(make_int2(-10, -10), make_int2(10, 10), make_float3(.3f, 5.5f, .3f), make_float2(.1f, .1f), 10.f, true);
-        m_particleSystem->addParticleGrid(make_int3(-3, 6, -3), make_int3(3, 15, 3), 1.f, false);
+        randnum = rand() % numColors;
+        m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
+                                              make_int3(scale, 8*scale, scale), 20, GPU_OPTIMIZED_TWO_KERNELS);
+        m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
+        m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
         break;
     case Qt::Key_7: // fluid blob
         delete m_particleSystem;
