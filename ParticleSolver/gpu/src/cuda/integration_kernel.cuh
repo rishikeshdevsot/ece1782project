@@ -47,8 +47,8 @@ texture<float, 1, cudaReadModeElementType> invMassTex;
 texture<int, 1, cudaReadModeElementType> oldPhaseTex;
 
 texture<uint, 1, cudaReadModeElementType> gridParticleHashTex;
-texture<uint, 1, cudaReadModeElementType> cellStartTex;
-texture<uint, 1, cudaReadModeElementType> cellEndTex;
+texture<uint2, 1, cudaReadModeElementType> cellRangeTex;
+//texture<uint, 1, cudaReadModeElementType> cellEndTex;
 
 
 // simulation parameters in constant memory
@@ -245,8 +245,8 @@ void calcHashD(uint   *gridParticleHash,  // output
 // rearrange particle data into sorted order, and find the start of each cell
 // in the sorted hash array
 __global__
-void reorderDataAndFindCellStartD(uint   *cellStart,        // output: cell start index
-                                  uint   *cellEnd,          // output: cell end index
+void reorderDataAndFindCellStartD(uint2   *cellRange,        // output: cell start index
+                                  //uint   *cellEnd,          // output: cell end index
                                   float4 *sortedPos,        // output: sorted positions
                                   float  *sortedW,          // output: sorted inverse masses
                                   int    *sortedPhase,      // output: sorted phase values
@@ -291,15 +291,15 @@ void reorderDataAndFindCellStartD(uint   *cellStart,        // output: cell star
 
         if (index == 0 || hash != sharedHash[threadIdx.x])
         {
-            cellStart[hash] = index;
+            cellRange[hash].x = index;
 
             if (index > 0)
-                cellEnd[sharedHash[threadIdx.x]] = index;
+                cellRange[sharedHash[threadIdx.x]].y = index;
         }
 
         if (index == numParticles - 1)
         {
-            cellEnd[hash] = index + 1;
+            cellRange[hash].y = index + 1;
         }
 
         // Now use the sorted index to reorder the pos and vel data
@@ -324,15 +324,17 @@ void collideCell(int3    gridPos,
                  float3  pos,
                  int     phase,
                  float4 *oldPos,
-                 uint   *cellStart,
-                 uint   *cellEnd,
+                 uint2   *cellRange,
+                 //uint   *cellEnd,
                  uint   *neighbors,
                  uint   *numNeighbors)
 {
     uint gridHash = calcGridHash(gridPos);
 
     // get start of bucket for this cell
-    uint startIndex = FETCH(cellStart, gridHash);
+    uint2 rangeIndex = FETCH(cellRange, gridHash);
+    uint startIndex = rangeIndex.x;
+    uint endIndex = rangeIndex.y;
 
     float collideDist = params.particleRadius * 2.001f; // slightly bigger radius
     float collideDist2 = collideDist * collideDist;
@@ -342,7 +344,7 @@ void collideCell(int3    gridPos,
     if (startIndex != 0xffffffff)          // cell is not empty
     {
         // iterate over particles in this cell
-        uint endIndex = FETCH(cellEnd, gridHash);
+        //uint endIndex = FETCH(cellEnd, gridHash);
 
         for (uint j=startIndex; j<endIndex; j++)
         {
@@ -380,8 +382,8 @@ void collideD(float4 *newPos,               // output: new pos
               float  *sortedW,
               int    *sortedPhase,
               uint   *gridParticleIndex,    // input: sorted particle indices
-              uint   *cellStart,
-              uint   *cellEnd,
+              uint2   *cellRange,
+              //uint   *cellEnd,
               uint    numParticles,
               uint   *neighbors,
               uint   *numNeighbors)
@@ -410,7 +412,8 @@ void collideD(float4 *newPos,               // output: new pos
             for (int x=-1; x<=1; x++)
             {
                 int3 neighbourPos = gridPos + make_int3(x, y, z);
-                collideCell(neighbourPos, index, pos, phase, sortedPos, cellStart, cellEnd, neighbors, numNeighbors);
+                collideCell(neighbourPos, index, pos, phase, sortedPos, cellRange, //cellEnd, 
+                neighbors, numNeighbors);
             }
         }
     }
@@ -547,12 +550,14 @@ void SolveFluidsFused(float  *lambda,               // input: sorted positions
                 uint gridHash = calcGridHash(neighbourPos);
 
                 // get start of bucket for this cell
-                uint startIndex = FETCH(cellStart, gridHash);
+                uint2 rangeIndex = FETCH(cellRange, gridHash);
+                uint startIndex = rangeIndex.x;
+                uint endIndex = rangeIndex.y;
 
                 if (startIndex != 0xffffffff)          // cell is not empty
                 {
                     // iterate over particles in this cell
-                    uint endIndex = FETCH(cellEnd, gridHash);
+                    //uint endIndex = FETCH(cellEnd, gridHash);
                     //printf("number of particles per grid: %d\n", endIndex - startIndex);
                     for (uint j=startIndex; j<endIndex; j++)
                     {
@@ -662,21 +667,23 @@ __device__
 void collideCellRadius(int3    gridPos,
                        uint    index,
                        float3  pos,
-                       uint   *cellStart,
-                       uint   *cellEnd,
+                       uint2   *cellRange,
+                       //uint   *cellEnd,
                        uint   *neighbors,
                        uint   *numNeighbors)
 {
     uint gridHash = calcGridHash(gridPos);
 
     // get start of bucket for this cell
-    uint startIndex = FETCH(cellStart, gridHash);
+    uint2 rangeIndex = FETCH(cellRange, gridHash);
+    uint startIndex = rangeIndex.x;
+    uint endIndex = rangeIndex.y;
 
     int num_neighbors = numNeighbors[index];
     if (startIndex != 0xffffffff)          // cell is not empty
     {
         // iterate over particles in this cell
-        uint endIndex = FETCH(cellEnd, gridHash);
+        //uint endIndex = FETCH(cellEnd, gridHash);
 
         for (uint j=startIndex; j<endIndex; j++)
         {
@@ -744,8 +751,8 @@ void collideCellRadius_cpu(int3    gridPos,
 __global__
 void findLambdasD(float  *lambda,               // input: sorted positions
                   uint   *gridParticleIndex,    // input: sorted particle indices
-                  uint   *cellStart,
-                  uint   *cellEnd,
+                  uint2   *cellRange,
+                  //uint   *cellEnd,
                   uint    numParticles,
                   uint   *neighbors,
                   uint   *numNeighbors,
@@ -776,7 +783,8 @@ void findLambdasD(float  *lambda,               // input: sorted positions
             for (int x=-rad; x<=rad; x++)
             {
                 int3 neighbourPos = gridPos + make_int3(x, y, z);
-                collideCellRadius(neighbourPos, index, pos, cellStart, cellEnd, neighbors, numNeighbors);
+                collideCellRadius(neighbourPos, index, pos, cellRange, //cellEnd, 
+                neighbors, numNeighbors);
             }
         }
     }

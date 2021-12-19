@@ -376,8 +376,8 @@ extern "C"
     }
 
 
-    void reorderDataAndFindCellStart(uint  *cellStart,
-                                     uint  *cellEnd,
+    void reorderDataAndFindCellStart(uint2  *cellRange,
+                                     //uint  *cellEnd,
                                      float *sortedPos,
                                      float *sortedVel,
                                      uint  *gridParticleHash,
@@ -391,15 +391,15 @@ extern "C"
         computeGridSize(numParticles, 256, numBlocks, numThreads);
 
         // set all cells to empty
-        checkCudaErrors(cudaMemset(cellStart, 0xffffffff, numCells*sizeof(uint)));
+        checkCudaErrors(cudaMemset(cellRange, 0xffffffff, numCells*sizeof(uint2)));
 
         checkCudaErrors(cudaBindTexture(0, oldPosTex, oldPos, numParticles*sizeof(float4)));
         checkCudaErrors(cudaBindTexture(0, oldVelTex, oldVel, numParticles*sizeof(float4)));
 
         uint smemSize = sizeof(uint)*(numThreads+1);
         reorderDataAndFindCellStartD<<< numBlocks, numThreads, smemSize>>>(
-            cellStart,
-            cellEnd,
+            cellRange,
+            //cellEnd,
             (float4 *) sortedPos,
             (float4 *) sortedVel,
             gridParticleHash,
@@ -417,15 +417,15 @@ extern "C"
                  float *sortedPos,
                  float *sortedVel,
                  uint  *gridParticleIndex,
-                 uint  *cellStart,
-                 uint  *cellEnd,
+                 uint2  *cellRange,
+                 //uint  *cellEnd,
                  uint   numParticles,
                  uint   numCells)
     {
         checkCudaErrors(cudaBindTexture(0, oldPosTex, sortedPos, numParticles*sizeof(float4)));
         checkCudaErrors(cudaBindTexture(0, oldVelTex, sortedVel, numParticles*sizeof(float4)));
-        checkCudaErrors(cudaBindTexture(0, cellStartTex, cellStart, numCells*sizeof(uint)));
-        checkCudaErrors(cudaBindTexture(0, cellEndTex, cellEnd, numCells*sizeof(uint)));
+        checkCudaErrors(cudaBindTexture(0, cellRangeTex, cellRange, numCells*sizeof(uint2)));
+        //checkCudaErrors(cudaBindTexture(0, cellEndTex, cellEnd, numCells*sizeof(uint)));
 
         // thread per particle
         uint numThreads, numBlocks;
@@ -436,8 +436,8 @@ extern "C"
                                               (float4 *)sortedPos,
                                               (float4 *)sortedVel,
                                               gridParticleIndex,
-                                              cellStart,
-                                              cellEnd,
+                                              cellRange,
+                                              //cellEnd,
                                               numParticles);
 
         // check if kernel invocation generated an error
@@ -445,8 +445,8 @@ extern "C"
 
         checkCudaErrors(cudaUnbindTexture(oldPosTex));
         checkCudaErrors(cudaUnbindTexture(oldVelTex));
-        checkCudaErrors(cudaUnbindTexture(cellStartTex));
-        checkCudaErrors(cudaUnbindTexture(cellEndTex));
+        checkCudaErrors(cudaUnbindTexture(cellRangeTex));
+        //checkCudaErrors(cudaUnbindTexture(cellEndTex));
     }
 
     void sortParticles(uint *dGridParticleHash, uint *dGridParticleIndex, uint numParticles)

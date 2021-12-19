@@ -35,8 +35,8 @@ extern "C"
 
     void sortParticles(uint *dGridParticleHash, uint *dGridParticleIndex, uint numParticles);
 
-    void reorderDataAndFindCellStart(uint  *cellStart,
-                                     uint  *cellEnd,
+    void reorderDataAndFindCellStart(uint2  *cellRange,
+                                     //uint  *cellEnd,
                                      float *sortedPos,
                                      float *sortedW,
                                      int   *sortedPhase,
@@ -57,8 +57,8 @@ extern "C"
                  float *sortedW,
                  int   *sortedPhase,
                  uint  *gridParticleIndex,
-                 uint  *cellStart,
-                 uint  *cellEnd,
+                 uint2  *cellRange,
+                 //uint  *cellEnd,
                  uint   numParticles,
                  uint   numCells);
 
@@ -90,8 +90,8 @@ extern "C"
                      float *sortedW,
                      int   *sortedPhase,
                      uint  *gridParticleIndex,
-                     uint  *cellStart,
-                     uint  *cellEnd,
+                     uint2  *cellRange,
+                     //uint  *cellEnd,
                      float *particles,
                      uint   numParticles,
                      uint   numCells);
@@ -121,8 +121,8 @@ void solveFluidsOptimized(float *sortedPos,
                       float *sortedW,
                       int   *sortedPhase,
                       uint  *gridParticleIndex,
-                      uint  *cellStart,
-                      uint  *cellEnd,
+                      uint2  *cellRange,
+                      //uint  *cellEnd,
                       float *particles,
                       uint   numParticles,
                       uint   numCells);
@@ -131,8 +131,8 @@ void solveFluidsOptimizedTwoKernels(float *sortedPos,
                       float *sortedW,
                       int   *sortedPhase,
                       uint  *gridParticleIndex,
-                      uint  *cellStart,
-                      uint  *cellEnd,
+                      uint2  *cellRange,
+                      //uint  *cellEnd,
                       float *particles,
                       uint   numParticles,
                       uint   numCells);

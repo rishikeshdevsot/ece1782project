@@ -105,8 +105,8 @@ void ParticleSystem::_init(uint numParticles, uint maxParticles)
     allocateArray((void **)&m_dGridParticleHash, m_maxParticles*sizeof(uint));
     allocateArray((void **)&m_dGridParticleIndex, m_maxParticles*sizeof(uint));
 
-    allocateArray((void **)&m_dCellStart, m_numGridCells*sizeof(uint));
-    allocateArray((void **)&m_dCellEnd, m_numGridCells*sizeof(uint));
+    allocateArray((void **)&m_dCellRange, m_numGridCells*sizeof(uint2));
+    // allocateArray((void **)&m_dCellEnd, m_numGridCells*sizeof(uint));
 
     setParameters(&m_params);
     setHostParameters(&m_params);
@@ -125,8 +125,8 @@ void ParticleSystem::_finalize()
 
     freeArray(m_dGridParticleHash);
     freeArray(m_dGridParticleIndex);
-    freeArray(m_dCellStart);
-    freeArray(m_dCellEnd);
+    freeArray(m_dCellRange);
+    //freeArray(m_dCellEnd);
 
     unregisterGLBufferObject(m_cuda_posvbo_resource);
     glDeleteBuffers(1, (const GLuint *)&m_posVbo);
@@ -188,8 +188,8 @@ void ParticleSystem::update(float deltaTime)
         // reorder particle arrays into sorted order and
         // find start and end of each cell
         reorderDataAndFindCellStart(
-                    m_dCellStart,
-                    m_dCellEnd,
+                    m_dCellRange,
+                    //m_dCellEnd,
                     m_dSortedPos,
                     m_dSortedW,
                     m_dSortedPhase,
@@ -205,41 +205,41 @@ void ParticleSystem::update(float deltaTime)
                     m_dSortedW,
                     m_dSortedPhase,
                     m_dGridParticleIndex,
-                    m_dCellStart,
-                    m_dCellEnd,
+                    m_dCellRange,
+                    //m_dCellEnd,
                     m_numParticles,
                     m_numGridCells);
 
         // find neighbors within a specified radius of fluids
         // and apply fluid constraints
         if (m_fluidSolveMode == CPU) {
-            solveFluids_cpu(m_dSortedPos,
-                            m_dSortedW,
-                            m_dSortedPhase,
-                            m_dGridParticleIndex,
-                            m_dCellStart,
-                            m_dCellEnd,
-                            dPos,
-                            m_numParticles,
-                            m_numGridCells);
+            // solveFluids_cpu(m_dSortedPos,
+            //                 m_dSortedW,
+            //                 m_dSortedPhase,
+            //                 m_dGridParticleIndex,
+            //                 m_dCellStart,
+            //                 m_dCellEnd,
+            //                 dPos,
+            //                 m_numParticles,
+            //                 m_numGridCells);
 
-            solveFluids_justD(m_dSortedPos,
-                              m_dSortedW,
-                              m_dSortedPhase,
-                              m_dGridParticleIndex,
-                              m_dCellStart,
-                              m_dCellEnd,
-                              dPos,
-                              m_numParticles,
-                              m_numGridCells);
+            // solveFluids_justD(m_dSortedPos,
+            //                   m_dSortedW,
+            //                   m_dSortedPhase,
+            //                   m_dGridParticleIndex,
+            //                   m_dCellStart,
+            //                   m_dCellEnd,
+            //                   dPos,
+            //                   m_numParticles,
+            //                   m_numGridCells);
         }
         else if (m_fluidSolveMode == GPU_ORIG) {
             solveFluidsOrig(m_dSortedPos,
                         m_dSortedW,
                         m_dSortedPhase,
                         m_dGridParticleIndex,
-                        m_dCellStart,
-                        m_dCellEnd,
+                        m_dCellRange,
+                        //m_dCellEnd,
                         dPos,
                         m_numParticles,
                         m_numGridCells);
@@ -249,8 +249,8 @@ void ParticleSystem::update(float deltaTime)
                             m_dSortedW,
                             m_dSortedPhase,
                             m_dGridParticleIndex,
-                            m_dCellStart,
-                            m_dCellEnd,
+                            m_dCellRange,
+                            //m_dCellEnd,
                             dPos,
                             m_numParticles,
                             m_numGridCells);          
@@ -260,8 +260,8 @@ void ParticleSystem::update(float deltaTime)
                             m_dSortedW,
                             m_dSortedPhase,
                             m_dGridParticleIndex,
-                            m_dCellStart,
-                            m_dCellEnd,
+                            m_dCellRange,
+                            //m_dCellEnd,
                             dPos,
                             m_numParticles,
                             m_numGridCells);
@@ -294,55 +294,6 @@ void ParticleSystem::update(float deltaTime)
     // add new particles to the scene
     addNewStuff();
 }
-
-// void ParticleSystem::solveFluids_cpu(float * m_dSortedPos, float * m_dSortedW, int * m_dSortedPhase, uint * m_dGridParticleIndex,
-// uint * m_dCellStart, uint * m_dCellEnd, float * dPos, uint m_numParticles, uint m_numGridCells) {
-//         checkCudaErrors(cudaBindTexture(0, oldPosTex, sortedPos, numParticles*sizeof(float4)));
-//         checkCudaErrors(cudaBindTexture(0, invMassTex, sortedW, numParticles*sizeof(float)));
-//         checkCudaErrors(cudaBindTexture(0, oldPhaseTex, sortedPhase, numParticles*sizeof(float4)));
-//         checkCudaErrors(cudaBindTexture(0, cellStartTex, cellStart, numCells*sizeof(uint)));
-//         checkCudaErrors(cudaBindTexture(0, cellEndTex, cellEnd, numCells*sizeof(uint)));
-
-//         // thread per particle
-//         uint numThreads, numBlocks;
-//         computeGridSize(numParticles, 256, numBlocks, numThreads);
-
-//         float *dLambda = thrust::raw_pointer_cast(lambda.data());
-// //        float *dDenom = thrust::raw_pointer_cast(denom.data());
-//         uint *dNeighbors = thrust::raw_pointer_cast(neighbors.data());
-//         uint *dNumNeighbors = thrust::raw_pointer_cast(numNeighbors.data());
-//         float *dRos = thrust::raw_pointer_cast(ros.data());
-
-// //        printf("ros: %u, numParts: %u\n", (uint)ros.size(), numParticles);
-
-//         // execute the kernel
-//         findLambdasD<<< numBlocks, numThreads >>>(dLambda,
-//                                                   gridParticleIndex,
-//                                                   cellStart,
-//                                                   cellEnd,
-//                                                   numParticles,
-//                                                   dNeighbors,
-//                                                   dNumNeighbors,
-//                                                   dRos);
-
-//         // execute the kernel
-//         solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
-//                                                   gridParticleIndex,
-//                                                   (float4 *) particles,
-//                                                   numParticles,
-//                                                   dNeighbors,
-//                                                   dNumNeighbors,
-//                                                   dRos);
-
-//         // check if kernel invocation generated an error
-//         getLastCudaError("Kernel execution failed");
-
-//         checkCudaErrors(cudaUnbindTexture(oldPosTex));
-//         checkCudaErrors(cudaUnbindTexture(invMassTex));
-//         checkCudaErrors(cudaUnbindTexture(oldPhaseTex));
-//         checkCudaErrors(cudaUnbindTexture(cellStartTex));
-//         checkCudaErrors(cudaUnbindTexture(cellEndTex));
-// }
 
 void ParticleSystem::addNewStuff()
 {

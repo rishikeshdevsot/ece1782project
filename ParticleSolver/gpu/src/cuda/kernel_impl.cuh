@@ -134,8 +134,8 @@ void calcHashD(uint   *gridParticleHash,  // output
 // rearrange particle data into sorted order, and find the start of each cell
 // in the sorted hash array
 __global__
-void reorderDataAndFindCellStartD(uint   *cellStart,        // output: cell start index
-                                  uint   *cellEnd,          // output: cell end index
+void reorderDataAndFindCellStartD(uint2   *cellRange,        // output: cell start index
+                                  //uint   *cellEnd,          // output: cell end index
                                   float4 *sortedPos,        // output: sorted positions
                                   float4 *sortedVel,        // output: sorted velocities
                                   uint   *gridParticleHash, // input: sorted grid hashes
@@ -178,15 +178,15 @@ void reorderDataAndFindCellStartD(uint   *cellStart,        // output: cell star
 
         if (index == 0 || hash != sharedHash[threadIdx.x])
         {
-            cellStart[hash] = index;
+            cellRange[hash].x = index;
 
             if (index > 0)
-                cellEnd[sharedHash[threadIdx.x]] = index;
+                cellRange[sharedHash[threadIdx.x]].y = index;
         }
 
         if (index == numParticles - 1)
         {
-            cellEnd[hash] = index + 1;
+            cellRange[hash].x = index + 1;
         }
 
         // Now use the sorted index to reorder the pos and vel data
