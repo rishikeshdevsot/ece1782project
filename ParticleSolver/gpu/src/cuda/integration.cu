@@ -542,7 +542,7 @@ extern "C"
     //        printf("ros: %u, numParts: %u\n", (uint)ros.size(), numParticles);
 
         // execute the kernel
-        findLambdasD<<< numBlocks, numThreads >>>(dLambda,
+        findLambdasDOptimized<<< numBlocks, numThreads >>>(dLambda,
                                                   gridParticleIndex,
                                                   cellStart,
                                                   cellEnd,
@@ -552,7 +552,7 @@ extern "C"
                                                   dRos);
 
         // execute the kernel
-        solveFluidsD<<< numBlocks, numThreads >>>(dLambda,
+        solveFluidsDOptimized<<< numBlocks, numThreads >>>(dLambda,
                                                   gridParticleIndex,
                                                   (float4 *) particles,
                                                   numParticles,

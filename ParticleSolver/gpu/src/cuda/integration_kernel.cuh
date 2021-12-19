@@ -589,6 +589,8 @@ void SolveFluidsFused(float  *lambda,               // input: sorted positions
     float ro = 0.f;
     float denom = 0.f;
     float3 grad = make_float3(0.f);
+    uint gridParticleIndexLocal = gridParticleIndex[index];
+    float rosLocal = ros[gridParticleIndexLocal];
     for (uint i = 0; i < numNeighborsLocal; i++)
     {
         // TODO: this again is a global memory read that we do not need so far
@@ -609,7 +611,7 @@ void SolveFluidsFused(float  *lambda,               // input: sorted positions
             spikeyGrad = make_float3(0.f); // randomize a little
         else
             spikeyGrad = (r / rlen) * -SPIKEY_COEFF * hMinus*hMinus;
-        spikeyGrad /= ros[gridParticleIndex[index]];
+        spikeyGrad /= rosLocal;
 
         grad += -spikeyGrad;
         denom += dot(spikeyGrad, spikeyGrad);
@@ -618,8 +620,8 @@ void SolveFluidsFused(float  *lambda,               // input: sorted positions
     ro += (POLY6_COEFF * H6 ) / w;
     denom += dot(grad, grad);
     // TODO: this definitely can go shared memory if we fuse the 2 kernels
-    lambda[index] = - ((ro / ros[gridParticleIndex[index]]) - 1) / (denom + FLUID_RELAXATION);
-
+    float lamdaLocal = - ((ro / rosLocal) - 1) / (denom + FLUID_RELAXATION);
+    lambda[index] = lamdaLocal;
     ///////////////////////////// THIS IS THE KERNEL FUSION BOUNDARY ///////////////////////
     __syncthreads();
 
@@ -648,12 +650,11 @@ void SolveFluidsFused(float  *lambda,               // input: sorted positions
         float denom = (POLY6_COEFF * term2*term2*term2 );
         float lambdaCorr = -K_P * pow(numer / denom, E_P);
 
-        delta += (lambda[index] + lambda[neighbors[index * MAX_FLUID_NEIGHBORS + i]] + lambdaCorr) * spikeyGrad;
+        delta += (lamdaLocal + lambda[neighbors[index * MAX_FLUID_NEIGHBORS + i]] + lambdaCorr) * spikeyGrad;
         // delta += (lambda[index] + lambda[neighborPosCache[threadIdx.x * MAX_FLUID_NEIGHBORS + i]] + lambdaCorr) * spikeyGrad;
     }
 
-    uint origIndex = gridParticleIndex[index];
-    particles[origIndex] += delta / (ros[gridParticleIndex[index]] + numNeighborsLocal);
+    particles[gridParticleIndexLocal] += delta / (rosLocal + numNeighborsLocal);
 }
 
 
@@ -698,7 +699,6 @@ void collideCellRadius(int3    gridPos,
         }
     }
     numNeighbors[index] = num_neighbors;
-
 }
 
 void collideCellRadius_cpu(int3    gridPos,
@@ -815,6 +815,111 @@ void findLambdasD(float  *lambda,               // input: sorted positions
     lambda[index] = - ((ro / ros[gridParticleIndex[index]]) - 1) / (denom + FLUID_RELAXATION);
 }
 
+__global__
+void findLambdasDOptimized(float  *lambda,               // input: sorted positions
+                           uint   *gridParticleIndex,    // input: sorted particle indices
+                           uint   *cellStart,
+                           uint   *cellEnd,
+                           uint    numParticles,
+                           uint   *neighbors,
+                           uint   *numNeighbors,
+                           float  *ros)
+{
+    uint index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (index >= numParticles) return;
+
+    int phase = FETCH(oldPhase, index);
+    if (phase != FLUID) return;
+
+    // read particle data from sorted arrays
+    float3 pos = make_float3(FETCH(oldPos, index));
+
+    // get address in grid
+    int3 gridPos = calcGridPos(pos);
+
+    // examine neighbouring cells
+
+    int num_neighbors = 0;
+    for (int z=-RADHARDCODE; z<=RADHARDCODE; z++)
+    {
+        for (int y=-RADHARDCODE; y<=RADHARDCODE; y++)
+        {
+            for (int x=-RADHARDCODE; x<=RADHARDCODE; x++)
+            {
+                int3 neighbourPos = gridPos + make_int3(x, y, z);
+                uint gridHash = calcGridHash(neighbourPos);
+
+                // get start of bucket for this cell
+                uint startIndex = FETCH(cellStart, gridHash);
+
+                if (startIndex != 0xffffffff)          // cell is not empty
+                {
+                    // iterate over particles in this cell
+                    uint endIndex = FETCH(cellEnd, gridHash);
+
+                    for (uint j=startIndex; j<endIndex; j++)
+                    {
+                        if (j != index)                // check not colliding with self
+                        {
+                            // TODO: pos2 can be saved into shared memory
+                            float3 pos2 = make_float3(FETCH(oldPos, j));
+
+                            float3 relPos = pos - pos2;
+                            float dist2 = dot(relPos, relPos);
+                            if (dist2 < H2 && num_neighbors < MAX_FLUID_NEIGHBORS)
+                            {
+                                // neighbor stuff
+                                // TODO: coalse the wirte to this variable
+                                neighbors[index * MAX_FLUID_NEIGHBORS + num_neighbors] = j;
+                                num_neighbors += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    numNeighbors[index] = num_neighbors;
+
+    float w = FETCH(invMass, index);
+    float ro = 0.f;
+    float denom = 0.f;
+    float3 grad = make_float3(0.f);
+    uint gridParticleIndexLocal = gridParticleIndex[index];
+    float rosLocal = ros[gridParticleIndexLocal];
+
+    for (uint i = 0; i < num_neighbors; i++)
+    {
+        uint ni = neighbors[index * MAX_FLUID_NEIGHBORS + i];
+        float3 pos2 =  make_float3(FETCH(oldPos, ni));
+//        float w2 = FETCH(invMass, ni);
+        float3 r = pos - pos2;
+        float rlen2 = dot(r, r);
+        float rlen = sqrt(rlen2);
+        float hMinus2 = H2 - rlen2;
+        float hMinus = H - rlen;
+
+        // do fluid solid scaling hurr
+        ro += (POLY6_COEFF * hMinus2*hMinus2*hMinus2 ) / w;
+
+        float3 spikeyGrad;
+        if (rlen < 0.0001f)
+            spikeyGrad = make_float3(0.f); // randomize a little
+        else
+            spikeyGrad = (r / rlen) * -SPIKEY_COEFF * hMinus*hMinus;
+        spikeyGrad /= rosLocal;
+
+        grad += -spikeyGrad;
+        denom += dot(spikeyGrad, spikeyGrad);
+    }
+    ro += (POLY6_COEFF * H6 ) / w;
+    denom += dot(grad, grad);
+
+    lambda[index] = - ((ro / rosLocal) - 1) / (denom + FLUID_RELAXATION);
+}
+
 void findLambdasD_cpu(float  *lambda,               // input: sorted positions
                   uint   *gridParticleIndex,    // input: sorted particle indices
                   uint   *cellStart,
@@ -893,6 +998,55 @@ void findLambdasD_cpu(float  *lambda,               // input: sorted positions
     }
 }
 
+__global__
+void solveFluidsDOptimized(float  *lambda,              // input: sorted positions
+                           uint   *gridParticleIndex,    // input: sorted particle indices
+                           float4 *particles,
+                           uint    numParticles,
+                           uint   *neighbors,
+                           uint   *numNeighbors,
+                           float  *ros)
+{
+    uint index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (index >= numParticles) return;
+
+    int phase = FETCH(oldPhase, index);
+    if (phase != FLUID) return;
+
+    float4 pos = FETCH(oldPos, index);
+
+    float4 delta = make_float4(0.f);
+    uint numNeighborsLocal = numNeighbors[index];
+    uint gridParticleIndexLocal = gridParticleIndex[index];
+    float lamdaLocal = lambda[index];
+
+    for (uint i = 0; i < numNeighborsLocal; i++)
+    {
+        float4 pos2 =  FETCH(oldPos, neighbors[index * MAX_FLUID_NEIGHBORS + i]);
+        float4 r = pos - pos2;
+        float rlen2 = dot(r, r);
+        float rlen = sqrt(rlen2);
+        float hMinus2 = H2 - rlen2;
+        float hMinus = H - rlen;
+
+        float4 spikeyGrad;
+        if (rlen < 0.0001f)
+            spikeyGrad = make_float4(0,EPS,0,0) * -SPIKEY_COEFF * hMinus*hMinus;
+        else
+            spikeyGrad = (r / rlen) * -SPIKEY_COEFF * hMinus*hMinus;
+
+        float term2 = H2 - (DQ_P * DQ_P * H2);
+
+        float numer = (POLY6_COEFF * hMinus2*hMinus2*hMinus2 ) ;
+        float denom = (POLY6_COEFF * term2*term2*term2 );
+        float lambdaCorr = -K_P * pow(numer / denom, E_P);
+
+        delta += (lamdaLocal + lambda[neighbors[index * MAX_FLUID_NEIGHBORS + i]] + lambdaCorr) * spikeyGrad;
+    }
+
+    particles[gridParticleIndexLocal] += delta / (ros[gridParticleIndexLocal] + numNeighborsLocal);
+}
 
 __global__
 void solveFluidsD(float  *lambda,              // input: sorted positions
@@ -942,8 +1096,4 @@ void solveFluidsD(float  *lambda,              // input: sorted positions
 
 }
 
-
-
 #endif // INTEGRATION_KERNEL_H
-
-
