@@ -29,6 +29,8 @@ extern "C"
             printf("No CUDA Capable devices found, exiting...\n");
             exit(EXIT_SUCCESS);
         }
+
+        checkCudaErrors(cudaDeviceSetCacheConfig(cudaFuncCachePreferL1));
     }
 
     void copyArrayToDevice(void *device, const void *host, int offset, int size)
