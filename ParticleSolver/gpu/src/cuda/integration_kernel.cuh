@@ -824,9 +824,11 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
                            uint    numParticles,
                            uint   *neighbors,
                            uint   *numNeighbors,
-                           float  *ros)
+                           float  *ros,
+                           size_t cahce_size)
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
+    extern __shared__ char cache[];
 
     if (index >= numParticles) return;
 
@@ -842,6 +844,7 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
     // examine neighbouring cells
 
     int num_neighbors = 0;
+#pragma unroll
     for (int z=-RADHARDCODE; z<=RADHARDCODE; z++)
     {
         for (int y=-RADHARDCODE; y<=RADHARDCODE; y++)
@@ -1012,9 +1015,11 @@ void solveFluidsDOptimized(float  *lambda,              // input: sorted positio
                            uint    numParticles,
                            uint   *neighbors,
                            uint   *numNeighbors,
-                           float  *ros)
+                           float  *ros,
+                           size_t cache_size)
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
+    extern __shared__ char cache[];
 
     if (index >= numParticles) return;
 

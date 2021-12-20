@@ -543,7 +543,7 @@ extern "C"
 
 	    cudaFuncSetCacheConfig(findLambdasDOptimized, pref);
 	    cudaFuncSetCacheConfig(solveFluidsDOptimized, pref);
-        cahce_size = 1024 * 2; // 2k
+        size_t cache_size = 1024 * 2 *0; // 2k
         // execute the kernel
         findLambdasDOptimized<<< numBlocks, numThreads, cache_size>>>(dLambda,
                                                   gridParticleIndex,
@@ -553,7 +553,8 @@ extern "C"
                                                   numParticles,
                                                   dNeighbors,
                                                   dNumNeighbors,
-                                                  dRos);
+                                                  dRos,
+                                                  cache_size);
 
         // execute the kernel
         solveFluidsDOptimized<<< numBlocks, numThreads, cache_size >>>(dLambda,
@@ -563,7 +564,8 @@ extern "C"
                                                   numParticles,
                                                   dNeighbors,
                                                   dNumNeighbors,
-                                                  dRos);
+                                                  dRos,
+                                                  cache_size);
 
         // check if kernel invocation generated an error
         getLastCudaError("Kernel execution failed");
