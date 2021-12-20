@@ -818,6 +818,7 @@ void findLambdasD(float  *lambda,               // input: sorted positions
 __global__
 void findLambdasDOptimized(float  *lambda,               // input: sorted positions
                            uint   *gridParticleIndex,    // input: sorted particle indices
+                           float  *oldPos,
                            uint   *cellStart,
                            uint   *cellEnd,
                            uint    numParticles,
@@ -833,7 +834,7 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
     if (phase != FLUID) return;
 
     // read particle data from sorted arrays
-    float3 pos = make_float3(FETCH(oldPos, index));
+    float3 pos = make_float3(oldPos[index*4],oldPos[index*4+1],oldPos[index*4+2]);
 
     // get address in grid
     int3 gridPos = calcGridPos(pos);
@@ -845,25 +846,31 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
     {
         for (int y=-RADHARDCODE; y<=RADHARDCODE; y++)
         {
+            int3 neighbourPos[RADHARDCODE*2+1];
+            uint gridHash[RADHARDCODE*2+1];
+            uint startIndex[RADHARDCODE*2+1];
             for (int x=-RADHARDCODE; x<=RADHARDCODE; x++)
             {
-                int3 neighbourPos = gridPos + make_int3(x, y, z);
-                uint gridHash = calcGridHash(neighbourPos);
+                neighbourPos[x+RADHARDCODE] = gridPos + make_int3(x, y, z);
+                gridHash[x+RADHARDCODE] = calcGridHash(neighbourPos[x+RADHARDCODE]);
 
                 // get start of bucket for this cell
-                uint startIndex = FETCH(cellStart, gridHash);
+                startIndex[x+RADHARDCODE] = cellStart[gridHash[x+RADHARDCODE]];
+            }
 
-                if (startIndex != 0xffffffff)          // cell is not empty
+            for (int x=-RADHARDCODE; x<=RADHARDCODE; x++)
+            {
+                if (startIndex[x+RADHARDCODE] != 0xffffffff)          // cell is not empty
                 {
                     // iterate over particles in this cell
-                    uint endIndex = FETCH(cellEnd, gridHash);
+                    uint endIndex = cellEnd[gridHash[x+RADHARDCODE]];
 
-                    for (uint j=startIndex; j<endIndex; j++)
+                    for (uint j=startIndex[x+RADHARDCODE]; j<endIndex; j++)
                     {
                         if (j != index)                // check not colliding with self
                         {
                             // TODO: pos2 can be saved into shared memory
-                            float3 pos2 = make_float3(FETCH(oldPos, j));
+                            float3 pos2 = make_float3(oldPos[j*4],oldPos[j*4+1],oldPos[j*4+2]);
 
                             float3 relPos = pos - pos2;
                             float dist2 = dot(relPos, relPos);
@@ -893,8 +900,7 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
     for (uint i = 0; i < num_neighbors; i++)
     {
         uint ni = neighbors[index * MAX_FLUID_NEIGHBORS + i];
-        float3 pos2 =  make_float3(FETCH(oldPos, ni));
-//        float w2 = FETCH(invMass, ni);
+        float3 pos2 =  make_float3(oldPos[ni*4],oldPos[ni*4+1],oldPos[ni*4+2]);
         float3 r = pos - pos2;
         float rlen2 = dot(r, r);
         float rlen = sqrt(rlen2);
@@ -1001,7 +1007,8 @@ void findLambdasD_cpu(float  *lambda,               // input: sorted positions
 __global__
 void solveFluidsDOptimized(float  *lambda,              // input: sorted positions
                            uint   *gridParticleIndex,    // input: sorted particle indices
-                           float4 *particles,
+                           float  *oldPos,
+                           float  *particles,
                            uint    numParticles,
                            uint   *neighbors,
                            uint   *numNeighbors,
@@ -1014,25 +1021,26 @@ void solveFluidsDOptimized(float  *lambda,              // input: sorted positio
     int phase = FETCH(oldPhase, index);
     if (phase != FLUID) return;
 
-    float4 pos = FETCH(oldPos, index);
+    float3 pos = make_float3(oldPos[index*4],oldPos[index*4+1],oldPos[index*4+2]);
 
-    float4 delta = make_float4(0.f);
+    float3 delta = make_float3(0.f);
     uint numNeighborsLocal = numNeighbors[index];
     uint gridParticleIndexLocal = gridParticleIndex[index];
     float lamdaLocal = lambda[index];
 
     for (uint i = 0; i < numNeighborsLocal; i++)
     {
-        float4 pos2 =  FETCH(oldPos, neighbors[index * MAX_FLUID_NEIGHBORS + i]);
-        float4 r = pos - pos2;
+        uint neighborsLocal = neighbors[index * MAX_FLUID_NEIGHBORS + i];
+        float3 pos2 =  make_float3(oldPos[neighborsLocal*4], oldPos[neighborsLocal*4+1], oldPos[neighborsLocal*4+2]);
+        float3 r = pos - pos2;
         float rlen2 = dot(r, r);
         float rlen = sqrt(rlen2);
         float hMinus2 = H2 - rlen2;
         float hMinus = H - rlen;
 
-        float4 spikeyGrad;
+        float3 spikeyGrad;
         if (rlen < 0.0001f)
-            spikeyGrad = make_float4(0,EPS,0,0) * -SPIKEY_COEFF * hMinus*hMinus;
+            spikeyGrad = make_float3(0,EPS,0) * -SPIKEY_COEFF * hMinus*hMinus;
         else
             spikeyGrad = (r / rlen) * -SPIKEY_COEFF * hMinus*hMinus;
 
@@ -1042,10 +1050,12 @@ void solveFluidsDOptimized(float  *lambda,              // input: sorted positio
         float denom = (POLY6_COEFF * term2*term2*term2 );
         float lambdaCorr = -K_P * pow(numer / denom, E_P);
 
-        delta += (lamdaLocal + lambda[neighbors[index * MAX_FLUID_NEIGHBORS + i]] + lambdaCorr) * spikeyGrad;
+        delta += (lamdaLocal + lambda[neighborsLocal] + lambdaCorr) * spikeyGrad;
     }
 
-    particles[gridParticleIndexLocal] += delta / (ros[gridParticleIndexLocal] + numNeighborsLocal);
+    particles[gridParticleIndexLocal*4] += delta.x / (ros[gridParticleIndexLocal] + numNeighborsLocal);
+    particles[gridParticleIndexLocal*4+1] += delta.y / (ros[gridParticleIndexLocal] + numNeighborsLocal);
+    particles[gridParticleIndexLocal*4+2] += delta.z / (ros[gridParticleIndexLocal] + numNeighborsLocal);
 }
 
 __global__
