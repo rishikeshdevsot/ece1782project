@@ -1053,9 +1053,10 @@ void solveFluidsDOptimized(float  *lambda,              // input: sorted positio
         delta += (lamdaLocal + lambda[neighborsLocal] + lambdaCorr) * spikeyGrad;
     }
 
-    particles[gridParticleIndexLocal*4] += delta.x / (ros[gridParticleIndexLocal] + numNeighborsLocal);
-    particles[gridParticleIndexLocal*4+1] += delta.y / (ros[gridParticleIndexLocal] + numNeighborsLocal);
-    particles[gridParticleIndexLocal*4+2] += delta.z / (ros[gridParticleIndexLocal] + numNeighborsLocal);
+    float rosPlusNumNeighboursLocal = (ros[gridParticleIndexLocal] + numNeighborsLocal);
+    particles[gridParticleIndexLocal*4] += delta.x / rosPlusNumNeighboursLocal;
+    particles[gridParticleIndexLocal*4+1] += delta.y / rosPlusNumNeighboursLocal;
+    particles[gridParticleIndexLocal*4+2] += delta.z / rosPlusNumNeighboursLocal;
 }
 
 __global__
