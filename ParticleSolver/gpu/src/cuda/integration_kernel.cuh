@@ -832,7 +832,9 @@ findLambdasDOptimized(float  *lambda,               // input: sorted positions
     extern __shared__ char cache[];
     // max particles is 50000 so short (65532) will not ovetrflow
     unsigned short *neighbor_cache = (unsigned short*)cache;
-    size_t cahce_cap = cache_size / 2; // short is 2 bytes
+    size_t cache_cap = cache_size / 2; // short is 2 bytes
+    size_t cache_per_thread = cache_cap / blockDim.x;
+
 
     if (index >= numParticles) return;
 
@@ -885,7 +887,12 @@ findLambdasDOptimized(float  *lambda,               // input: sorted positions
                             {
                                 // neighbor stuff
                                 // TODO: coalse the wirte to this variable
-                                neighbors[index * MAX_FLUID_NEIGHBORS + num_neighbors] = j;
+                                if (num_neighbors < cache_per_thread) {
+                                    neighbor_cache[threadIdx.x * cache_per_thread + num_neighbors] = j;    
+                                }
+                                else {
+                                    neighbors[index * MAX_FLUID_NEIGHBORS + num_neighbors] = j;
+                                }
                                 num_neighbors += 1;
                             }
                         }
@@ -904,7 +911,34 @@ findLambdasDOptimized(float  *lambda,               // input: sorted positions
     uint gridParticleIndexLocal = gridParticleIndex[index];
     float rosLocal = ros[gridParticleIndexLocal];
 
-    for (uint i = 0; i < num_neighbors; i++)
+    //  read from cache
+    for (uint i = 0; i < cache_per_thread; i++)
+    {
+        if (i >= num_neighbors) break;
+
+        uint ni = neighbor_cache[threadIdx.x * cache_per_thread + i];
+        float3 pos2 =  make_float3(oldPos[ni*4],oldPos[ni*4+1],oldPos[ni*4+2]);
+        float3 r = pos - pos2;
+        float rlen2 = dot(r, r);
+        float rlen = sqrt(rlen2);
+        float hMinus2 = H2 - rlen2;
+        float hMinus = H - rlen;
+
+        // do fluid solid scaling hurr
+        ro += (POLY6_COEFF * hMinus2*hMinus2*hMinus2 ) / w;
+
+        float3 spikeyGrad;
+        if (rlen < 0.0001f)
+            spikeyGrad = make_float3(0.f); // randomize a little
+        else
+            spikeyGrad = (r / rlen) * -SPIKEY_COEFF * hMinus*hMinus;
+        spikeyGrad /= rosLocal;
+
+        grad += -spikeyGrad;
+        denom += dot(spikeyGrad, spikeyGrad);
+    }
+    // read from the rest
+    for (uint i = cache_per_thread; i < num_neighbors; i++)
     {
         uint ni = neighbors[index * MAX_FLUID_NEIGHBORS + i];
         float3 pos2 =  make_float3(oldPos[ni*4],oldPos[ni*4+1],oldPos[ni*4+2]);
@@ -931,6 +965,15 @@ findLambdasDOptimized(float  *lambda,               // input: sorted positions
     denom += dot(grad, grad);
 
     lambda[index] = - ((ro / rosLocal) - 1) / (denom + FLUID_RELAXATION);
+
+    // write cache back
+    for (uint i = 0; i < cache_per_thread; i++)
+    {
+        if (i >= num_neighbors) break;
+
+         neighbors[index * MAX_FLUID_NEIGHBORS + i] = \
+                     neighbor_cache[threadIdx.x * cache_per_thread + i];
+    }
 }
 
 void findLambdasD_cpu(float  *lambda,               // input: sorted positions
