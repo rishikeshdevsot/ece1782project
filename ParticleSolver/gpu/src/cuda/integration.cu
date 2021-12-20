@@ -543,7 +543,7 @@ extern "C"
 
 	    cudaFuncSetCacheConfig(findLambdasDOptimized, pref);
 	    cudaFuncSetCacheConfig(solveFluidsDOptimized, pref);
-        size_t cache_size = 1024 * 2 *0; // 2k
+        size_t cache_size = 1024 * 2 ; // 2k
         // execute the kernel
         findLambdasDOptimized<<< numBlocks, numThreads, cache_size>>>(dLambda,
                                                   gridParticleIndex,

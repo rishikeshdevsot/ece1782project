@@ -154,6 +154,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
     float angle;
     unsigned int scale = 10;
     int randnum = 0;
+    int solver_iters = 10;
     // numbers 0-9 toggle different scenes
     switch (e->key())
     {
@@ -171,7 +172,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         delete m_particleSystem;
         randnum = rand() % numColors;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
-                                              make_int3(scale, 8*scale, scale), 20, GPU_ORIG);
+                                              make_int3(scale, 8*scale, scale), solver_iters, GPU_ORIG);
         m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
         m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
 	break;
@@ -179,7 +180,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         delete m_particleSystem;
         randnum = rand() % numColors;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
-                                              make_int3(scale, 8*scale, scale), 20, GPU_OPTIMIZED);
+                                              make_int3(scale, 8*scale, scale), solver_iters, GPU_OPTIMIZED);
         m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
         m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
         break;
@@ -188,7 +189,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         scale = 4;
         randnum = rand() % numColors;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
-                                              make_int3(scale, 8*scale, scale), 20, CPU);
+                                              make_int3(scale, 8*scale, scale), solver_iters, CPU);
         m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
         m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
         break;
@@ -196,7 +197,7 @@ void ParticleApp::keyReleased(QKeyEvent *e)
         delete m_particleSystem;
         randnum = rand() % numColors;
         m_particleSystem = new ParticleSystem(PARTICLE_RADIUS, GRID_SIZE, MAX_PARTICLES, make_int3(-scale, 0, -scale),
-                                              make_int3(scale, 8*scale, scale), 12, GPU_OPTIMIZED_TWO_KERNELS);
+                                              make_int3(scale, 8*scale, scale), solver_iters, GPU_OPTIMIZED_TWO_KERNELS);
         m_particleSystem->addFluid(make_int3(-scale, 0, -scale), make_int3(scale, scale, scale), 1.f, 2.f, colors[randnum]);
         m_particleSystem->addFluid(make_int3(-scale, scale, -scale), make_int3(scale, 2*scale, scale), 1.f, 4.f, colors[(randnum  + 1)% numColors]);
         break;

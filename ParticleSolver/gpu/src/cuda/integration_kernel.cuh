@@ -844,7 +844,7 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
     // examine neighbouring cells
 
     int num_neighbors = 0;
-#pragma unroll
+//#pragma unroll
     for (int z=-RADHARDCODE; z<=RADHARDCODE; z++)
     {
         for (int y=-RADHARDCODE; y<=RADHARDCODE; y++)
