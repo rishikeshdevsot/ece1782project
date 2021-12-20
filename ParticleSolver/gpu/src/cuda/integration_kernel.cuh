@@ -496,7 +496,7 @@ struct subtract_functor
 
 //TODO NEXT: oldpos of neighbors is loaded 3 times, load once is enough, just make them 
 // to shared memory and reuse for the later 2 accesses.
-#define RADHARDCODE (4)
+#define RADHARDCODE (3)
 __global__
 void SolveFluidsFused(float  *lambda,               // input: sorted positions
                   uint   *gridParticleIndex,    // input: sorted particle indices
