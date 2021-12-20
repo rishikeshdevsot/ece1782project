@@ -20,7 +20,7 @@
 #include "helper_math.h"
 #include "util.cuh"
 
-#define MAX_PARTICLES 100000 // (vbo size)
+#define MAX_PARTICLES 50000 // (vbo size)
 #define PARTICLE_RADIUS 0.25f
 #define GRID_SIZE make_uint3(64, 64, 64) // 3D
 
