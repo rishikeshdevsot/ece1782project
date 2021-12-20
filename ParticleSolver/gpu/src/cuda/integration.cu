@@ -538,8 +538,14 @@ extern "C"
 
     //        printf("ros: %u, numParts: %u\n", (uint)ros.size(), numParticles);
 
+	
+	    enum cudaFuncCache pref = cudaFuncCachePreferL1;
+
+	    cudaFuncSetCacheConfig(findLambdasDOptimized, pref);
+	    cudaFuncSetCacheConfig(solveFluidsDOptimized, pref);
+        cahce_size = 1024 * 2; // 2k
         // execute the kernel
-        findLambdasDOptimized<<< numBlocks, numThreads >>>(dLambda,
+        findLambdasDOptimized<<< numBlocks, numThreads, cache_size>>>(dLambda,
                                                   gridParticleIndex,
                                                   sortedPos,
                                                   cellStart,
@@ -550,7 +556,7 @@ extern "C"
                                                   dRos);
 
         // execute the kernel
-        solveFluidsDOptimized<<< numBlocks, numThreads >>>(dLambda,
+        solveFluidsDOptimized<<< numBlocks, numThreads, cache_size >>>(dLambda,
                                                   gridParticleIndex,
                                                   sortedPos,
                                                   particles,
