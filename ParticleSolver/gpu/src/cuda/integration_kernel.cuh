@@ -20,7 +20,7 @@
 #define EPS 0.001f
 
 ////////////// fluid constants /////////////
-#define MAX_FLUID_NEIGHBORS 250
+#define MAX_FLUID_NEIGHBORS 150
 
 #define H 2.f       // kernel radius
 #define H2 4.f      // H^2
