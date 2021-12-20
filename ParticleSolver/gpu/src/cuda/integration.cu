@@ -557,15 +557,14 @@ extern "C"
                                                   cache_size);
 
         // execute the kernel
-        solveFluidsDOptimized<<< numBlocks, numThreads, cache_size >>>(dLambda,
+        solveFluidsDOptimized<<< numBlocks, numThreads>>>(dLambda,
                                                   gridParticleIndex,
                                                   sortedPos,
                                                   particles,
                                                   numParticles,
                                                   dNeighbors,
                                                   dNumNeighbors,
-                                                  dRos,
-                                                  cache_size);
+                                                  dRos);
 
         // check if kernel invocation generated an error
         getLastCudaError("Kernel execution failed");

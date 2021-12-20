@@ -815,8 +815,9 @@ void findLambdasD(float  *lambda,               // input: sorted positions
     lambda[index] = - ((ro / ros[gridParticleIndex[index]]) - 1) / (denom + FLUID_RELAXATION);
 }
 
-__global__
-void findLambdasDOptimized(float  *lambda,               // input: sorted positions
+__global__ void 
+__launch_bounds__(32 /*maxThreadsPerBlock */, 16/*minBlocksPerMultiprocessor */)
+findLambdasDOptimized(float  *lambda,               // input: sorted positions
                            uint   *gridParticleIndex,    // input: sorted particle indices
                            float  *oldPos,
                            uint   *cellStart,
@@ -825,10 +826,13 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
                            uint   *neighbors,
                            uint   *numNeighbors,
                            float  *ros,
-                           size_t cahce_size)
+                           size_t cache_size)
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
     extern __shared__ char cache[];
+    // max particles is 50000 so short (65532) will not ovetrflow
+    unsigned short *neighbor_cache = (unsigned short*)cache;
+    size_t cahce_cap = cache_size / 2; // short is 2 bytes
 
     if (index >= numParticles) return;
 
@@ -844,7 +848,6 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
     // examine neighbouring cells
 
     int num_neighbors = 0;
-//#pragma unroll
     for (int z=-RADHARDCODE; z<=RADHARDCODE; z++)
     {
         for (int y=-RADHARDCODE; y<=RADHARDCODE; y++)
@@ -852,6 +855,7 @@ void findLambdasDOptimized(float  *lambda,               // input: sorted positi
             int3 neighbourPos[RADHARDCODE*2+1];
             uint gridHash[RADHARDCODE*2+1];
             uint startIndex[RADHARDCODE*2+1];
+#pragma unroll
             for (int x=-RADHARDCODE; x<=RADHARDCODE; x++)
             {
                 neighbourPos[x+RADHARDCODE] = gridPos + make_int3(x, y, z);
@@ -1007,19 +1011,18 @@ void findLambdasD_cpu(float  *lambda,               // input: sorted positions
     }
 }
 
-__global__
-void solveFluidsDOptimized(float  *lambda,              // input: sorted positions
+__global__ void 
+__launch_bounds__(32 /*maxThreadsPerBlock */, 16/*minBlocksPerMultiprocessor */)
+solveFluidsDOptimized(float  *lambda,              // input: sorted positions
                            uint   *gridParticleIndex,    // input: sorted particle indices
                            float  *oldPos,
                            float  *particles,
                            uint    numParticles,
                            uint   *neighbors,
                            uint   *numNeighbors,
-                           float  *ros,
-                           size_t cache_size)
+                           float  *ros)
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
-    extern __shared__ char cache[];
 
     if (index >= numParticles) return;
 
