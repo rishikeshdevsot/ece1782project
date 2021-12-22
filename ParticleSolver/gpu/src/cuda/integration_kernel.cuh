@@ -829,17 +829,16 @@ findLambdasDOptimized(float  *lambda,               // input: sorted positions
                            size_t cache_size)
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= numParticles) return;
+
+    int phase = FETCH(oldPhase, index);
+    if (phase != FLUID) return;
+
     extern __shared__ char cache[];
     // max particles is 50000 so short (65532) will not ovetrflow
     unsigned short *neighbor_cache = (unsigned short*)cache;
     size_t cache_cap = cache_size / 2; // short is 2 bytes
     size_t cache_per_thread = cache_cap / blockDim.x;
-
-
-    if (index >= numParticles) return;
-
-    int phase = FETCH(oldPhase, index);
-    if (phase != FLUID) return;
 
     // read particle data from sorted arrays
     float3 pos = make_float3(oldPos[index*4],oldPos[index*4+1],oldPos[index*4+2]);
@@ -867,6 +866,7 @@ findLambdasDOptimized(float  *lambda,               // input: sorted positions
                 startIndex[x+RADHARDCODE] = cellStart[gridHash[x+RADHARDCODE]];
             }
 
+//#pragma unroll
             for (int x=-RADHARDCODE; x<=RADHARDCODE; x++)
             {
                 if (startIndex[x+RADHARDCODE] != 0xffffffff)          // cell is not empty
@@ -988,13 +988,13 @@ void findLambdasD_cpu(float  *lambda,               // input: sorted positions
                   uint   *numNeighbors,
                   float  *ros)
 {
+#pragma omp parallel for
     for(uint index = 0; index < numParticles; index = index + 1){
        // uint index = __mul24(blockIdx.x,blockDim.x) + threadIdx.x;
 
-        if (index >= numParticles) return;
 
         int phase = oldPhase[index];
-        if (phase != FLUID) return;
+        if (phase != FLUID) continue;
 
         // read particle data from sorted arrays
         float3 pos = make_float3(oldPos[index]);
