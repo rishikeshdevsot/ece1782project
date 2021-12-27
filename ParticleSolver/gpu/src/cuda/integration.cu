@@ -643,7 +643,7 @@ extern "C"
                      uint   numCells) 
     {
         // Copy mem to host mem
-        uint max_particles = 15000;
+        uint max_particles = 50000;
         float4 * h_oldPos = (float4 *)malloc(numParticles*sizeof(float4));
         float * h_invMass = (float *)malloc(numParticles*sizeof(float));
         int * h_oldPhase = (int *)malloc(numParticles*sizeof(int));
